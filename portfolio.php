@@ -1,9 +1,9 @@
 <?php
+// Add this at the top of your portfolio.php
+// header('Content-Type: application/json');
 session_start();
-if (!isset($_SESSION['user_email']) && isset($data['email'])) {
-    $_SESSION['user_email'] = $data['email'];
-}
-// Database connection
+
+// // Database connection
 $conn = new mysqli("localhost", "root", "Ashok@123", "portfolio");
 if ($conn->connect_error) {
     echo json_encode([
@@ -11,6 +11,11 @@ if ($conn->connect_error) {
         "success" => false
     ]);
     exit;
+}
+
+
+if (!isset($_SESSION['user_email']) && isset($data['email'])) {
+    $_SESSION['user_email'] = $data['email'];
 }
 
 
@@ -41,8 +46,8 @@ if ($result->num_rows === 0) {
 }
 
 $row = $result->fetch_assoc();
-
 // Prepare the data to send as JSON
+
 $data = [
     "success" => true,
     "name" => $row['name'],

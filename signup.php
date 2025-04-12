@@ -56,6 +56,7 @@ if ($stmt->execute()) {
 
     // Store user ID in session (User is now logged in)
     $_SESSION['user_id'] = $user_id;
+    $_SESSION["user_email"] = $email;
 
     // Redirect to dashboard
     header("Location: main.html?newUser=true");
