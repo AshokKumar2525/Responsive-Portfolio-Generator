@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function() {
   fetch('../portfolio.php')
       .then(res => res.json())
       .then(data => {
-      
           if (data.error) {
               console.error(data.error);
               return;
@@ -21,14 +20,13 @@ document.addEventListener('DOMContentLoaded', function() {
           animateJobRoles(data);
           setupCertificateModal();
       })
-
       .catch(error => {
           console.error("Error fetching data:", error);
           showErrorMessages();
-});
+      });
 
   // Initialize tooltips
-const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
   tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl);
   });
@@ -55,6 +53,7 @@ function populateAbout(data) {
   document.getElementById('about-text').textContent = data.about;
   document.getElementById('about-pic').src = data.photo_url;
 }
+
 function animateJobRoles() {
   const roleElement = document.getElementById('role');
   if (!roleElement) return;
@@ -99,129 +98,164 @@ function animateJobRoles() {
 
 function populateEducation(data) {
   const container = document.getElementById('education-container');
-  container.innerHTML = '';
-
-  if (data.education && data.education.length > 0) {
-      data.education.forEach(edu => {
-          const col = document.createElement('div');
-          col.className = 'col-md-6';
-          col.innerHTML = `
-              <div class="education-item h-100">
-                  <h3>${edu.institution}</h3>
-                  <p class="text-muted mb-1"><i class="bi bi-calendar me-2"></i>${edu.duration}</p>
-                  <p class="mb-0"><strong>Grade:</strong> ${edu.grade}</p>
-              </div>
-          `;
-          container.appendChild(col);
-      });
-  } else {
-      container.innerHTML = '<div class="col-12 text-center"><p class="text-muted">No education information available</p></div>';
+  const section = document.getElementById('education');
+  const navItem = document.querySelector('a.nav-link[href="#education"]')?.parentElement;
+  
+  if (!data.education || data.education.length === 0 || !hasValidEducation(data.education)) {
+      if (section) section.style.display = 'none';
+      if (navItem) navItem.remove();
+      return;
   }
+
+  container.innerHTML = '';
+  data.education.forEach(edu => {
+      if (!edu.institution || !edu.duration) return;
+      
+      const col = document.createElement('div');
+      col.className = 'col-md-6';
+      col.innerHTML = `
+          <div class="education-item h-100">
+              <h3>${edu.institution}</h3>
+              <p class="text-muted mb-1"><i class="bi bi-calendar me-2"></i>${edu.duration}</p>
+              ${edu.grade ? `<p class="mb-0"><strong>Grade:</strong> ${edu.grade}</p>` : ''}
+          </div>
+      `;
+      container.appendChild(col);
+  });
+}
+
+function hasValidEducation(education) {
+  return education.some(edu => edu.institution && edu.duration);
 }
 
 function populateExperience(data) {
   const container = document.getElementById('experience-container');
-  container.innerHTML = '';
-
-  if (data.experience && data.experience.length > 0) {
-      data.experience.forEach(exp => {
-
-        // if (!exp.years || !exp.role || !exp.company) {
-        //   experience.innerHTML = ""
-        //   experience.style.display = 'none';
-        //   const navItem = document.querySelector('a.nav-link[href="#experience"]')?.parentElement;
-        //   if (navItem) navItem.remove(); // Removes the entire <li> element
-
-        // }else{
-          const col = document.createElement('div');
-          col.className = 'col-md-6';
-          col.innerHTML = `
-              <div class="experience-item h-100">
-                  <h3 class="experience-position">${exp.role || 'Position not specified'}</h3>
-                  <p class="experience-company">${exp.company || 'Company not specified'}</p>
-                  <p class="experience-duration"><i class="bi bi-calendar me-2"></i>${exp.years+"years" || 'Duration not specified'}</p>
-                  ${exp.description ? `<div class="experience-description">${exp.description}</div>` : ''}
-              </div>
-          `;
-          container.appendChild(col);
-        // }
-      });
-  } else {
-    experience.innerHTML = ""
-    experience.style.display = 'none';
-    const navItem = document.querySelector('a.nav-link[href="#experience"]')?.parentElement;
-    if (navItem) navItem.remove(); // Removes the entire <li> element  }
+  const section = document.getElementById('experience');
+  const navItem = document.querySelector('a.nav-link[href="#experience"]')?.parentElement;
+  
+  if (!data.experience || data.experience.length === 0 || !hasValidExperience(data.experience)) {
+      if (section) section.style.display = 'none';
+      if (navItem) navItem.remove();
+      return;
   }
+
+  container.innerHTML = '';
+  data.experience.forEach(exp => {
+      if (!exp.role || !exp.company || !exp.years) return;
+      
+      const col = document.createElement('div');
+      col.className = 'col-md-6';
+      col.innerHTML = `
+          <div class="experience-item h-100">
+              <h3 class="experience-position">${exp.role}</h3>
+              <p class="experience-company">${exp.company}</p>
+              <p class="experience-duration"><i class="bi bi-calendar me-2"></i>${exp.years} years</p>
+              ${exp.description ? `<div class="experience-description">${exp.description}</div>` : ''}
+          </div>
+      `;
+      container.appendChild(col);
+  });
 }
 
+function hasValidExperience(experience) {
+  return experience.some(exp => exp.role && exp.company && exp.years);
+}
 
 function populateProjects(data) {
   const container = document.getElementById('projects-container');
-  container.innerHTML = '';
+  const section = document.getElementById('projects');
+  const navItem = document.querySelector('a.nav-link[href="#projects"]')?.parentElement;
+  
+  if (!data.projects || data.projects.length === 0 || !hasValidProjects(data.projects)) {
+      if (section) section.style.display = 'none';
+      if (navItem) navItem.remove();
+      return;
+  }
 
-  if (data.projects && data.projects.length > 0) {
-      data.projects.forEach(project => {
-          const col = document.createElement('div');
-          col.className = 'col-md-6 col-lg-4';
-          col.innerHTML = `
-              <div class="card project-card h-100">
-                  ${project.image ? `<img src="${project.image}" class="card-img-top" alt="${project.projectName}">` : ''}
-                  <div class="card-body">
-                      <h5 class="card-title">${project.projectName}</h5>
-                      <p class="card-text">${project.description}</p>
-                  </div>
-                  <div class="card-footer bg-transparent">
-                      <a href="${project.gitrepolink}" target="_blank" class="btn btn-primary">
-                          <i class="bi bi-github me-1"></i> View Code
-                      </a>
-                  </div>
+  container.innerHTML = '';
+  data.projects.forEach(project => {
+      if (!project.projectName || !project.description) return;
+      
+      const col = document.createElement('div');
+      col.className = 'col-md-6 col-lg-4';
+      col.innerHTML = `
+          <div class="card project-card h-100">
+              ${project.image ? `<img src="${project.image}" class="card-img-top" alt="${project.projectName}">` : ''}
+              <div class="card-body">
+                  <h5 class="card-title">${project.projectName}</h5>
+                  <p class="card-text">${project.description}</p>
               </div>
-          `;
-          container.appendChild(col);
-      });
-  } 
+              ${project.gitrepolink ? `
+              <div class="card-footer bg-transparent">
+                  <a href="${project.gitrepolink}" target="_blank" class="btn btn-primary">
+                      <i class="bi bi-github me-1"></i> View Code
+                  </a>
+              </div>
+              ` : ''}
+          </div>
+      `;
+      container.appendChild(col);
+  });
 }
 
+function hasValidProjects(projects) {
+  return projects.some(project => project.projectName && project.description);
+}
 
 function populateAchievements(data) {
   const container = document.getElementById('achievements-list');
-  container.innerHTML = '';
+  const section = document.getElementById('achievements');
+  const navItem = document.querySelector('a.nav-link[href="#achievements"]')?.parentElement;
+  
+  if (!data.achievements || data.achievements.length === 0 || !hasValidAchievements(data.achievements)) {
+      if (section) section.style.display = 'none';
+      if (navItem) navItem.remove();
+      return;
+  }
 
-  if (data.achievements && data.achievements.length > 0) {
-    data.achievements.forEach(item => {
+  container.innerHTML = '';
+  data.achievements.forEach(item => {
+      if (!item) return;
+      
       const li = document.createElement('li');
       li.className = 'list-group-item';
       li.textContent = item;
       container.appendChild(li);
-    });
-  } else {
-      achievements.innerHTML = ""
-      achievements.style.display = 'none';
-      const navItem = document.querySelector('a.nav-link[href="#achievements"]')?.parentElement;
-      if (navItem) navItem.remove(); // Removes the entire <li> element
-      return
-  }
+  });
 }
 
+function hasValidAchievements(achievements) {
+  return achievements.some(item => item && item.trim() !== '');
+}
 
 function populateCertifications(data) {
   const container = document.getElementById('certifications-container');
-  container.innerHTML = '';
-
-  if (data.certifications && data.certifications.length > 0) {
-      data.certifications.forEach(cert => {
-          const col = document.createElement('div');
-          col.className = 'col-md-6 col-lg-4';
-          col.innerHTML = `
-              <div class="card certification-card h-100">
-                  <img src="${cert}" class="card-img-top" alt="Certification">
-              </div>
-          `;
-          container.appendChild(col);
-      });
-  } else {
-      container.innerHTML = '<div class="col-12 text-center"><p class="text-muted">No certifications available</p></div>';
+  const section = document.getElementById('certifications');
+  const navItem = document.querySelector('a.nav-link[href="#certifications"]')?.parentElement;
+  
+  if (!data.certifications || data.certifications.length === 0 || !hasValidCertifications(data.certifications)) {
+      if (section) section.style.display = 'none';
+      if (navItem) navItem.remove();
+      return;
   }
+
+  container.innerHTML = '';
+  data.certifications.forEach(cert => {
+      if (!cert) return;
+      
+      const col = document.createElement('div');
+      col.className = 'col-md-6 col-lg-4';
+      col.innerHTML = `
+          <div class="card certification-card h-100">
+              <img src="${cert}" class="card-img-top" alt="Certification">
+          </div>
+      `;
+      container.appendChild(col);
+  });
+}
+
+function hasValidCertifications(certifications) {
+  return certifications.some(cert => cert && cert.trim() !== '');
 }
 
 function setupCertificateModal() {
@@ -285,6 +319,8 @@ function populateSkills(data) {
 
       data.skills.split(',').forEach(skill => {
           const trimmedSkill = skill.trim().toLowerCase();
+          if (!trimmedSkill) return;
+          
           const icon = skillIcons[trimmedSkill] || 'patch-check-fill';
           const color = skillColors[trimmedSkill] || '#6C757D';
 
@@ -298,69 +334,25 @@ function populateSkills(data) {
           `;
           container.appendChild(li);
       });
-  } 
-
+  }
 }
 
 function populateContact(data) {
-  document.getElementById('mobile').textContent = data.mobile;
-  document.getElementById('mobile').href = `tel:${data.mobile}`;
-  document.getElementById('email').textContent = data.email;
-  document.getElementById('sender_email').href = `mailto:${data.email}`;
-  document.getElementById('linkedin').href = data.linkedin_link;
-  document.getElementById('github').href = data.github_link;
-  document.getElementById('instagram').href = data.instagram_link;
+  if (data.mobile) {
+      document.getElementById('mobile').textContent = data.mobile;
+      document.getElementById('mobile').href = `tel:${data.mobile}`;
+  }
+  if (data.email) {
+      document.getElementById('email').textContent = data.email;
+      document.getElementById('sender_email').href = `mailto:${data.email}`;
+  }
+  if (data.linkedin_link) {
+      document.getElementById('linkedin').href = data.linkedin_link;
+  }
+  if (data.github_link) {
+      document.getElementById('github').href = data.github_link;
+  }
+  if (data.instagram_link) {
+      document.getElementById('instagram').href = data.instagram_link;
+  }
 }
-
-// // Add this to your portfolio.js
-// document.querySelector('.contact-form').addEventListener('submit', function(e) {
-//     e.preventDefault();
-    
-//     const form = e.target;
-//     const formData = new FormData(form);
-//     const submitButton = form.querySelector('button[type="submit"]');
-//     const originalButtonText = submitButton.textContent;
-    
-//     console.log("fetched : "+formData);
-//     // Show loading state
-//     // submitButton.disabled = true;
-//     // submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...';
-    
-//     fetch('send_email.php', {
-//         method: 'POST',
-//         body: formData
-//     })
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error(response.statusText);
-//         }
-//         return response.text();
-//     })
-//     .then(data => {
-//         // Show success message
-//         const alertDiv = document.createElement('div');
-//         alertDiv.className = 'alert alert-success mt-3';
-//         alertDiv.textContent = data;
-//         form.appendChild(alertDiv);
-        
-//         // Clear form
-//         form.reset();
-        
-//         // Remove alert after 5 seconds
-//         setTimeout(() => {
-//             alertDiv.remove();
-//         }, 3000);
-//     })
-//     .catch(error => {
-//         // Show error message
-//         const alertDiv = document.createElement('div');
-//         alertDiv.className = 'alert alert-danger mt-3';
-//         alertDiv.textContent = error.message || 'Failed to send message. Please try again.';
-//         form.appendChild(alertDiv);
-//     })
-//     .finally(() => {
-//         // Reset button
-//         submitButton.disabled = false;
-//         submitButton.textContent = originalButtonText;
-//     });
-// });

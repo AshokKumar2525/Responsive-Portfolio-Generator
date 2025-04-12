@@ -191,6 +191,49 @@ button:active {
     box-shadow: 0 2px 4px rgba(118, 75, 162, 0.4);
 }
 
+/* Remove button styles */
+.btn-remove {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #ff6a95;
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.btn-remove:hover {
+    background: #ff3d6e;
+    transform: scale(1.1);
+}
+
+.btn-remove svg {
+    width: 12px;
+    height: 12px;
+}
+
+/* Adjust the container padding to account for remove buttons */
+#education-container, #projects-container, #experience-container {
+    position: relative;
+    padding-top: 10px;
+}
+
+/* Add some spacing between rows */
+.row.g-2 {
+    margin-bottom: 15px;
+    padding-top: 5px;
+}
+
 /* Improved file input styling */
 input[type="file"] {
     padding: 8px;
