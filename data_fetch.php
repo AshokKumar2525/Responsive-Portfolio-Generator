@@ -1,13 +1,12 @@
 <?php
 session_start();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 // Database Connection
 $servername = "localhost";
 $username = "root";
 $password = "Ashok@123"; // Change this for production
 $dbname = "portfolio";
+
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
@@ -63,7 +62,7 @@ echo json_encode([
     "projects" => $projects,
     "experience" => $experience,
     "certifications" => $certification_files,
-    "photo" => $photo_name,
+    // "photo" => $photo_name,
     "photo_url" => $image_url
 ]);
 

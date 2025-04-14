@@ -3,7 +3,10 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
+// echo "<pre>";
+// print_r($_POST);
+// print_r($_FILES);
+// echo "</pre>";
 
 // Database Connection
 $servername = "localhost";

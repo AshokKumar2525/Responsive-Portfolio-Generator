@@ -9,6 +9,8 @@
     --shadow-sm: 0 2px 5px rgba(0,0,0,0.1);
     --shadow-md: 0 4px 10px rgba(0,0,0,0.1);
     --shadow-lg: 0 10px 20px rgba(0,0,0,0.1);
+  --nav-bg-color: rgba(44, 62, 80, 0.98); /* Slightly more opaque for mobile */
+
   }
   
   * {
@@ -459,3 +461,130 @@
       font-size: 2rem;
     }
   }
+
+/* Hamburger menu styles - Add these */
+.hamburger {
+  display: none;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 10px;
+  z-index: 1001;
+  position: relative;
+}
+
+.hamburger-box {
+  width: 30px;
+  height: 24px;
+  display: inline-block;
+  position: relative;
+}
+
+.hamburger-inner {
+  display: block;
+  top: 50%;
+  margin-top: -2px;
+}
+
+.hamburger-inner, 
+.hamburger-inner::before, 
+.hamburger-inner::after {
+  width: 30px;
+  height: 3px;
+  background-color: var(--light-text);
+  border-radius: 3px;
+  position: absolute;
+  transition: transform 0.15s ease;
+}
+
+.hamburger-inner::before, 
+.hamburger-inner::after {
+  content: "";
+  display: block;
+}
+
+.hamburger-inner::before {
+  top: -10px;
+}
+
+.hamburger-inner::after {
+  bottom: -10px;
+}
+
+/* Active state */
+.hamburger.active .hamburger-inner {
+  transform: rotate(45deg);
+}
+
+.hamburger.active .hamburger-inner::before {
+  transform: translateY(10px) rotate(0deg);
+  opacity: 0;
+}
+
+.hamburger.active .hamburger-inner::after {
+  transform: translateY(-10px) rotate(-90deg);
+}
+
+/* Responsive menu */
+@media (max-width: 768px) {
+  .hamburger {
+      display: block;
+  }
+  
+  .nav {
+      display: none;
+      width: 100%;
+      position: fixed;
+      top: 70px; /* Adjust based on your header height */
+      left: 0;
+      background: var(--nav-bg-color);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-md);
+      z-index: 1000;
+      flex-direction: column;
+      padding: 1rem 0;
+      margin: 0;
+      animation: fadeInDown 0.3s ease-out;
+  }
+  
+  .nav.active {
+      display: flex;
+  }
+  
+  .nav-item {
+      width: 100%;
+      text-align: center;
+      margin: 0;
+  }
+  
+  .nav-link {
+      padding: 15px;
+      display: block;
+      width: 100%;
+      color: var(--light-text);
+  }
+  
+  /* Ensure the container has relative positioning */
+  nav.container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+  }
+  
+  /* Hide the regular nav items */
+  .nav {
+      justify-content: center;
+      gap: 0;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+      opacity: 0;
+      transform: translateY(-20px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}

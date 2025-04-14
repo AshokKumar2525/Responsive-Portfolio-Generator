@@ -36,27 +36,55 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Handle contact form submission
 document.getElementById('contact_us')?.addEventListener('submit', function (e) {
-        const alertDiv = document.createElement('div');
-        alertDiv.style.position = 'fixed';
-        alertDiv.style.top = '20px';
-        alertDiv.style.right = '20px';
-        alertDiv.style.padding = '15px';
-        alertDiv.style.backgroundColor = '#4CAF50';
-        alertDiv.style.color = 'white';
-        alertDiv.style.borderRadius = '5px';
-        alertDiv.style.zIndex = '1000';
-        alertDiv.textContent = "message sent successfully..!";
+    const alertDiv = document.createElement('div');
+    alertDiv.style.position = 'fixed';
+    alertDiv.style.top = '20px';
+    alertDiv.style.right = '20px';
+    alertDiv.style.padding = '15px';
+    alertDiv.style.backgroundColor = '#4CAF50';
+    alertDiv.style.color = 'white';
+    alertDiv.style.borderRadius = '5px';
+    alertDiv.style.zIndex = '1000';
+    alertDiv.textContent = "message sent successfully..!";
 
-        // Add to document
-        document.body.appendChild(alertDiv);
+    // Add to document
+    document.body.appendChild(alertDiv);
 
-        // Remove after 2 seconds
-        setTimeout(() => {
-            alertDiv.remove();
-        }, 2000);
-    })
+    // Remove after 2 seconds
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 2000);
+})
 
+document.addEventListener('DOMContentLoaded', function () {
+    const hamburger = document.querySelector('.hamburger');
+    const navLinks = document.querySelector('.nav'); // Adjust selector to match your nav links container
 
+    // Toggle menu
+    hamburger.addEventListener('click', function () {
+        this.classList.toggle('active');
+        navLinks.classList.toggle('active');
+    });
+
+    // Close menu when a link is clicked and scroll to section
+    navLinks.addEventListener('click', function (e) {
+        if (e.target.tagName === 'A') {
+            // Close menu
+            hamburger.classList.remove('active');
+            this.classList.remove('active');
+
+            // Get target section
+            const targetId = e.target.getAttribute('href');
+            if (targetId.startsWith('#')) {
+                e.preventDefault();
+                const targetSection = document.querySelector(targetId);
+                if (targetSection) {
+                    targetSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
+    });
+});
 
 
 // Helper functions
@@ -324,6 +352,7 @@ function populateSkills(data) {
             'dl': 'motherboard',
             'dsa': 'diagram-3',
             'web technologies': 'globe'
+
         };
 
         const skillColors = {

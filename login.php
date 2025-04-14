@@ -3,7 +3,7 @@ session_start();
 
 // Database connection
 $servername = "localhost";
-$username = "root"; 
+$username = "root";
 $password = "Ashok@123"; 
 $dbname = "portfolio";
 
@@ -47,6 +47,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Store user ID in session
     $_SESSION['user_id'] = $user_id;
     $_SESSION['user_email'] = $email;
+
+    
     header("Location: main.html");
     exit;
 }

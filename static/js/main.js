@@ -126,6 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch("data_fetch.php")
         .then(response => response.json())
         .then(data => {
+            console.log("data fetched : "+data);
             if (data.error) {
                 console.log("No logged-in user. Showing empty form.");
                 populateFields("education-container", null, addEducation);
