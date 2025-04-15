@@ -15,7 +15,7 @@
         <h2 id="formTitle" class="mt-2">Register</h2>
     </div>
     
-    <form id="loginForm" action="login.php" method="POST" style="display: none;">
+    <form id="loginForm" action="login.php" method="POST" >
         <div class="mb-3">
             <label class="form-label">Email</label>
             <input type="email" class="form-control" name="email" required>
@@ -40,7 +40,7 @@
         </p>
     </form>
 
-    <form id="signupForm" action="signup.php" method="POST" onsubmit="return validateSignup()">
+    <form id="signupForm" action="signup.php" method="POST" style="display: none;" onsubmit="return validateSignup()">
         <div class="mb-3">
             <label class="form-label">Email</label>
             <input type="email" class="form-control" name="email" required>

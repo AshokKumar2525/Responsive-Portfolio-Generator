@@ -1,6 +1,7 @@
 /* Body with animated rainbow gradient background */
+
 body {
-    background: linear-gradient(135deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
+    background-color: #f1f1f1;
     background-size: 400% 400%;
     min-height: 100vh;
     display: flex;
@@ -9,7 +10,7 @@ body {
     padding: 20px;
     font-family: 'Poppins', sans-serif;
     color: #333;
-    animation: rainbowGradient 15s ease infinite;
+    /* animation: rainbowGradient 15s ease infinite; */
     position: relative;
     overflow-x: hidden;
     line-height: 1.6;
@@ -17,9 +18,17 @@ body {
 
 /* Slower, smoother gradient animation */
 @keyframes rainbowGradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 /* Improved particle effect */
@@ -36,9 +45,9 @@ body::before {
     pointer-events: none;
 }
 
-/* Enhanced form container with subtle glass morphism effect */
+/* Form Container */
 .form-container {
-    background: rgba(255, 255, 255, 0.98);
+    background: linear-gradient(135deg, #f9fafb, #e0e7ff);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     padding: 2.5rem;
@@ -46,11 +55,9 @@ body::before {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
     max-width: 700px;
     width: 100%;
-    transform: perspective(1000px);
-    animation: popIn3D 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    z-index: 2;
-    overflow-y: auto;
     max-height: 95vh;
+    overflow: hidden;
+    position: relative;
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -60,6 +67,7 @@ body::before {
         transform: perspective(1000px) rotateX(-15deg) translateY(20px) scale(0.95);
         opacity: 0;
     }
+
     100% {
         transform: perspective(1000px) rotateX(0) translateY(0) scale(1);
         opacity: 1;
@@ -96,6 +104,7 @@ h2::after {
         box-shadow: 0 0 5px rgba(102, 126, 234, 0.5);
         transform: scale(0.95);
     }
+
     100% {
         box-shadow: 0 0 20px rgba(255, 106, 149, 0.8);
         transform: scale(1.05);
@@ -120,7 +129,9 @@ label {
 }
 
 /* Improved input fields with floating label effect */
-input, textarea, select {
+input,
+textarea,
+select {
     width: 100%;
     padding: 12px 15px;
     border: 2px solid #e0e0e0;
@@ -131,7 +142,9 @@ input, textarea, select {
     background-color: #f9f9f9;
 }
 
-input:not([type="file"]), textarea, select {
+input:not([type="file"]),
+textarea,
+select {
     height: 48px;
 }
 
@@ -140,12 +153,16 @@ textarea {
     resize: vertical;
 }
 
-input:hover, textarea:hover, select:hover {
+input:hover,
+textarea:hover,
+select:hover {
     border-color: #b5b5b5;
     background-color: #fff;
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
@@ -153,11 +170,13 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* Validation states */
-input:invalid, textarea:invalid {
+input:invalid,
+textarea:invalid {
     border-color: #ff6a95;
 }
 
-input:valid, textarea:valid {
+input:valid,
+textarea:valid {
     border-color: #00cc99;
 }
 
@@ -223,7 +242,9 @@ button:active {
 }
 
 /* Adjust the container padding to account for remove buttons */
-#education-container, #projects-container, #experience-container {
+#education-container,
+#projects-container,
+#experience-container {
     position: relative;
     padding-top: 10px;
 }
@@ -263,15 +284,42 @@ input[type="file"]::-webkit-file-upload-button:hover {
     background: linear-gradient(135deg, #764ba2, #ff6a95);
 }
 
+input:invalid,
+textarea:invalid,
+select:invalid {
+    border-color: #ff6a95 !important;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20%,
+    60% {
+        transform: translateX(-5px);
+    }
+
+    40%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
 /* Enhanced preview containers */
-#profile-photo-container, #certifications-preview {
+#profile-photo-container,
+#certifications-preview {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
     margin-top: 10px;
 }
 
-#profile-photo-container img, #certifications-preview img {
+#profile-photo-container img,
+#certifications-preview img {
     width: 80px;
     height: 80px;
     object-fit: cover;
@@ -281,9 +329,45 @@ input[type="file"]::-webkit-file-upload-button:hover {
     transition: all 0.3s ease;
 }
 
-#profile-photo-container img:hover, #certifications-preview img:hover {
+#profile-photo-container img:hover,
+#certifications-preview img:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Form Navigation Styling */
+.form-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    gap: 1rem;
+    /* Adds space between buttons */
+}
+
+.btn-nav {
+    flex: 1;
+    /* Makes buttons take equal width */
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.prev-btn {
+    background: linear-gradient(135deg, #6c757d, #495057);
+}
+
+.next-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.btn-nav:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-nav:active {
+    transform: translateY(0);
 }
 
 /* Section dividers */
@@ -294,7 +378,7 @@ input[type="file"]::-webkit-file-upload-button:hover {
 }
 
 /* Add subtle animation to form elements */
-.form-container > * {
+.form-container>* {
     animation: fadeInUp 0.5s ease-out forwards;
     animation-delay: calc(var(--order) * 0.1s);
     opacity: 0;
@@ -305,6 +389,7 @@ input[type="file"]::-webkit-file-upload-button:hover {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -317,16 +402,19 @@ input[type="file"]::-webkit-file-upload-button:hover {
         padding: 1.5rem;
         max-width: 95%;
     }
-    
+
     h2 {
         font-size: 1.8rem;
     }
-    
-    input, textarea, select {
+
+    input,
+    textarea,
+    select {
         padding: 10px 12px;
     }
-    
-    #profile-photo-container img, #certifications-preview img {
+
+    #profile-photo-container img,
+    #certifications-preview img {
         width: 60px;
         height: 60px;
     }
@@ -349,4 +437,135 @@ input[type="file"]::-webkit-file-upload-button:hover {
 
 .form-container::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(#764ba2, #ff6a95);
+}
+
+
+/* Card Animation System */
+.form-card-wrapper {
+    position: relative;
+    height: calc(95vh - 200px);
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.form-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 8px;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
+    z-index: 1;
+    background: linear-gradient(135deg, #f9fafb, #e0e7ff);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow-y: auto;
+    max-height: 100%;
+}
+
+.form-card.active {
+    opacity: 1;
+    transform: translateX(0);
+    z-index: 2;
+    position: relative;
+    height: auto;
+}
+
+/* Animation Keyframes */
+@keyframes enterFromRight {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes enterFromLeft {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes exitToRight {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes exitToLeft {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+/* Hide inactive cards */
+.form-card:not(.active):not(.exit-to-left):not(.exit-to-right):not(.enter-from-left):not(.enter-from-right) {
+    display: none;
+}
+
+/* Progress Steps */
+.progress-steps {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(135deg, #f9fafb, #e0e7ff);
+    padding: 1rem 0;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+    gap: 12px;
+}
+
+.step {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    transition: all 0.1s ease;
+    position: relative;
+}
+
+.step.active {
+    background: linear-gradient(135deg, #667eea, #ff6a95);
+    transform: scale(1.2);
+}
+
+.step.completed {
+    background-color: #667eea;
+}
+
+.step.completed::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 6px;
+    height: 6px;
+    background-color: white;
+    border-radius: 50%;
 }

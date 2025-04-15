@@ -102,6 +102,10 @@ function populateBasicInfo(data) {
     document.getElementById('name').textContent = data.name;
     document.getElementById('role').textContent = data.job_roles;
     document.getElementById('profile-pic').src = data.photo_url;
+    const yearSpan = document.getElementById('year');
+    if (yearSpan && data.name) {
+        yearSpan.parentElement.innerHTML = `&copy; ${new Date().getFullYear()} ${data.name}. All rights reserved.`;
+    }
 }
 
 function populateAbout(data) {
@@ -170,7 +174,7 @@ function populateEducation(data) {
         col.className = 'col-md-6';
         col.innerHTML = `
           <div class="education-item h-100">
-              <h3>${edu.institution}</h3>
+              <h3><b>${edu.institution}</b></h3>
               <p class="text-muted mb-1"><i class="bi bi-calendar me-2"></i>${edu.duration}</p>
               ${edu.grade ? `<p class="mb-0"><strong>Grade:</strong> ${edu.grade}</p>` : ''}
           </div>
@@ -202,7 +206,7 @@ function populateExperience(data) {
         col.className = 'col-md-6';
         col.innerHTML = `
           <div class="experience-item h-100">
-              <h3 class="experience-position">${exp.role}</h3>
+              <h3 class="experience-position"><b>${exp.role}</b></h3>
               <p class="experience-company">${exp.company}</p>
               <p class="experience-duration"><i class="bi bi-calendar me-2"></i>${exp.years} years</p>
               ${exp.description ? `<div class="experience-description">${exp.description}</div>` : ''}
@@ -216,7 +220,7 @@ function hasValidExperience(experience) {
     return experience.some(exp => exp.role && exp.company && exp.years);
 }
 
-function populateProjects(data) {
+async function populateProjects(data) {
     const container = document.getElementById('projects-container');
     const section = document.getElementById('projects');
     const navItem = document.querySelector('a.nav-link[href="#projects"]')?.parentElement;
@@ -228,31 +232,89 @@ function populateProjects(data) {
     }
 
     container.innerHTML = '';
-    data.projects.forEach(project => {
-        if (!project.projectName || !project.description) return;
 
+    // Predefined tech-related keywords for better images
+    const techKeywords = ['code', 'programming', 'computer', 'tech', 'developer', 'software', 'web', 'app'];
+
+    for (const project of data.projects) {
+        if (!project.projectName || !project.description) continue;
+
+        // Generate initials from project name
+        const initials = project.projectName
+            .split(' ')
+            .map(word => word[0])
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
+
+        // Generate a consistent color based on project name
+        const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA502', '#A29BFE', '#6C5CE7', '#00B894'];
+        const colorIndex = Math.abs(hashCode(project.projectName)) % colors.length;
+        const color = colors[colorIndex];
+
+        // Create SVG placeholder as fallback
+        const svgPlaceholder = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
+            `<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'>
+                <rect width='600' height='400' fill='${color}'/>
+                <text x='50%' y='50%' fill='white' font-family='Arial' font-size='80' font-weight='bold' 
+                      text-anchor='middle' dominant-baseline='middle'>
+                    ${initials}
+                </text>
+            </svg>`
+        )}`;
+
+        // Create project card
         const col = document.createElement('div');
-        col.className = 'col-md-6 col-lg-4';
+        col.className = 'col-md-6 col-lg-4 mb-4';
         col.innerHTML = `
-          <div class="card project-card h-100">
-              ${project.image ? `<img src="${project.image}" class="card-img-top" alt="${project.projectName}">` : ''}
-              <div class="card-body">
-                  <h5 class="card-title">${project.projectName}</h5>
-                  <p class="card-text">${project.description}</p>
-              </div>
-              ${project.gitrepolink ? `
-              <div class="card-footer bg-transparent">
-                  <a href="${project.gitrepolink}" target="_blank" class="btn btn-primary">
-                      <i class="bi bi-github me-1"></i> View Code
-                  </a>
-              </div>
-              ` : ''}
-          </div>
-      `;
+            <div class="card project-card h-100">
+                <div class="project-image-container">
+                    <img src="${svgPlaceholder}" class="card-img-top project-image" alt="${project.projectName}">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title"><b>${project.projectName}</b></h5>
+                    <p class="card-text">${project.description}</p>
+                </div>
+                ${project.gitrepolink ? `
+                <div class="card-footer bg-transparent">
+                    <a href="${project.gitrepolink}" target="_blank" class="btn btn-primary">
+                        <i class="bi bi-github me-1"></i> View Code
+                    </a>
+                </div>
+                ` : ''}
+            </div>
+        `;
         container.appendChild(col);
-    });
+
+        // Try to load a random tech image in the background
+        try {
+            const randomKeyword = techKeywords[Math.floor(Math.random() * techKeywords.length)];
+            const imgElement = col.querySelector('.project-image');
+            const tempImg = new Image();
+
+            tempImg.onload = function () {
+                imgElement.src = `https://source.unsplash.com/random/600x400/?${randomKeyword},technology`;
+            };
+            tempImg.onerror = function () {
+                // Keep the SVG placeholder if image fails to load
+            };
+            tempImg.src = `https://source.unsplash.com/random/600x400/?${randomKeyword},technology`;
+        } catch (error) {
+            console.error('Error loading image:', error);
+        }
+    }
 }
 
+// Helper function to generate consistent hash from string
+function hashCode(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return hash;
+}
+
+// Helper function to check if projects are valid
 function hasValidProjects(projects) {
     return projects.some(project => project.projectName && project.description);
 }
@@ -351,8 +413,34 @@ function populateSkills(data) {
             'ai': 'cpu',
             'dl': 'motherboard',
             'dsa': 'diagram-3',
-            'web technologies': 'globe'
-
+            'web technologies': 'globe',
+            'typescript': 'filetype-tsx',
+            'mongodb': 'leaf',
+            'express': 'terminal',
+            'nextjs': 'layers',
+            'tailwind': 'wind',
+            'bootstrap': 'bootstrap',
+            'git': 'git-branch',
+            'github': 'github',
+            'firebase': 'flame',
+            'docker': 'box',
+            'linux': 'linux',
+            'bash': 'terminal-square',
+            'cloud computing': 'cloud',
+            'aws': 'cloud',
+            'azure': 'cloud-rain',
+            'gcp': 'cloud-sun',
+            'cyber security': 'shield-check',
+            'networking': 'wifi',
+            'blockchain': 'link-2',
+            'devops': 'settings',
+            'kubernetes': 'boxes',
+            'nginx': 'server',
+            'graphql': 'graph-up',
+            'postman': 'send',
+            'jira': 'clipboard-list',
+            'figma': 'palette',
+            'ui/ux': 'layout-dashboard'
         };
 
         const skillColors = {
@@ -369,9 +457,38 @@ function populateSkills(data) {
             'sql': '#4479A1',
             'ml': '#FF6B6B',
             'ai': '#4ECDC4',
+            'dl': '#8E44AD',
             'dsa': '#45B7D1',
-            'web technologies': '#FFA502'
+            'web technologies': '#FFA502',
+            'typescript': '#3178C6',
+            'mongodb': '#47A248',
+            'express': '#303030',
+            'nextjs': '#000000',
+            'tailwind': '#38BDF8',
+            'bootstrap': '#7952B3',
+            'git': '#F05032',
+            'github': '#24292E',
+            'firebase': '#FFCA28',
+            'docker': '#0db7ed',
+            'linux': '#FCC624',
+            'bash': '#4EAA25',
+            'cloud computing': '#00BFFF',
+            'aws': '#FF9900',
+            'azure': '#007FFF',
+            'gcp': '#4285F4',
+            'cyber security': '#FF4757',
+            'networking': '#2ED573',
+            'blockchain': '#5865F2',
+            'devops': '#0F9D58',
+            'kubernetes': '#326CE5',
+            'nginx': '#009639',
+            'graphql': '#E10098',
+            'postman': '#FF6C37',
+            'jira': '#0052CC',
+            'figma': '#F24E1E',
+            'ui/ux': '#A29BFE'
         };
+
 
         data.skills.split(',').forEach(skill => {
             const trimmedSkill = skill.trim().toLowerCase();

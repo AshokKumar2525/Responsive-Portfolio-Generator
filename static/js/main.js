@@ -17,7 +17,7 @@ function cleanEmptyFields(containerId, keepAtLeastOne = true) {
     rows.forEach(row => {
         const inputs = row.querySelectorAll('input');
         const allEmpty = Array.from(inputs).every(input => !input.value.trim());
-        
+
         if (allEmpty) {
             if (nonEmptyCount === 0 && keepAtLeastOne) {
                 // Clear the values but keep one empty row
@@ -40,7 +40,7 @@ function populateFields(containerId, data, addFunction) {
     } else {
         data.forEach(entry => addFunction(entry));
     }
-    
+
     // Clean empty fields AFTER populating
     cleanEmptyFields(containerId);
 }
@@ -120,13 +120,12 @@ function addExperience(entry = {}) {
     container.appendChild(div);
 }
 
-
 // Fetch and populate data after login
 document.addEventListener("DOMContentLoaded", function () {
     fetch("data_fetch.php")
         .then(response => response.json())
         .then(data => {
-            console.log("data fetched : "+data);
+            console.log("data fetched : " + data);
             if (data.error) {
                 console.log("No logged-in user. Showing empty form.");
                 populateFields("education-container", null, addEducation);
@@ -194,8 +193,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else {
                     populateFields("experience-container", null, addExperience);
                 }
-
             }
+
         })
         .catch(error => {
             console.error("Error fetching data:", error);

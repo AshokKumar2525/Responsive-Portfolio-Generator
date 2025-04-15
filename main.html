@@ -6,192 +6,417 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile Details</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/main.css">
     <script src="/static/js/main.js"></script>
 
-<style>
-    /* Set animation order for form elements */
-    .form-container > * {--order: 0;}    
-    /* You can manually set orders for specific elements if needed */
-    h2 { --order: 0; }
-    .mb-3:nth-child(1) { --order: 1; }
-    .mb-3:nth-child(2) { --order: 2; }
-</style>
 </head>
 
 <body>
     <div class="form-container">
         <h2 class="text-center">User Profile Details</h2>
-        <form action="data_store.php" method="POST" enctype="multipart/form-data">
-            
-            <!-- Personal Information -->
-            <div class="mb-3">
-                <label class="form-label">Full Name</label>
-                <input type="text" class="form-control" name="name" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" class="form-control" name="email" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Mobile</label>
-                <input type="text" class="form-control" name="mobile" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Skills (comma-separated)</label>
-                <input type="text" class="form-control" name="skills" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Job Roles</label>
-                <input type="text" class="form-control" name="job_roles" placeholder="e.g., Web Developer, Researcher" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Profile Photo</label>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <input type="file" class="form-control" id="photoInput" name="photo" accept="image/*">
-                    <div style="display: flex; flex-wrap: wrap; gap: 15px;" id="profile-photo-container"></div>
+
+        <!-- Progress Steps -->
+        <div class="progress-steps">
+            <div class="step active" data-step="personalInfoCard"></div>
+            <div class="step" data-step="linksCard"></div>
+            <div class="step" data-step="aboutCard"></div>
+            <div class="step" data-step="photoCard"></div>
+            <div class="step" data-step="educationCard"></div>
+            <div class="step" data-step="projectsCard"></div>
+            <div class="step" data-step="experienceCard"></div>
+            <div class="step" data-step="certificationsCard"></div>
+        </div>
+
+        <form action="data_store.php" method="POST" enctype="multipart/form-data" id="multiStepForm">
+            <!-- Card Container -->
+            <div class="form-card-wrapper">
+
+                <!-- Personal Information Card -->
+                <div class="form-card active" id="personalInfoCard">
+                    <div class="card-content">
+                        <h3>Personal Information</h3>
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mobile</label>
+                            <input type="text" class="form-control" name="mobile" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Skills (comma-separated)</label>
+                            <input type="text" class="form-control" name="skills" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Job Roles</label>
+                            <input type="text" class="form-control" name="job_roles"
+                                placeholder="e.g., Web Developer, Researcher" required>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary btn-nav next-btn"
+                                onclick="nextCard('personalInfoCard', 'linksCard')">Next</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Links Card -->
+                <div class="form-card" id="linksCard">
+                    <div class="card-content">
+                        <h3>Social Links</h3>
+
+                        <div class="mb-3">
+                            <label class="form-label">GitHub Link</label>
+                            <input type="url" class="form-control" name="github_link"
+                                placeholder="https://www.github.com/yourprofile" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">LinkedIn Link</label>
+                            <input type="url" class="form-control" name="linkedin_link"
+                                placeholder="https://www.linkedin.com/yourprofile" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Instagram Link (optional)</label>
+                            <input type="url" class="form-control" name="instagram_link"
+                                placeholder="https://www.instagram.com/yourprofile">
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary btn-nav"
+                                onclick="prevCard('linksCard', 'personalInfoCard')">Previous</button>
+                            <button type="button" class="btn btn-secondary btn-nav"
+                                onclick="nextCard('linksCard', 'aboutCard')">Next</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Card -->
+                <div class="form-card" id="aboutCard">
+                    <div class="card-content">
+                        <h3>About & Achievements</h3>
+
+                        <div class="mb-3">
+                            <label class="form-label">About</label>
+                            <textarea class="form-control" name="about" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Achievements (optional)</label>
+                            <textarea class="form-control" name="achievements" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary btn-nav"
+                                onclick="prevCard('aboutCard', 'linksCard')">Previous</button>
+                            <button type="button" class="btn btn-secondary btn-nav"
+                                onclick="nextCard('aboutCard', 'photoCard')">Next</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Photo Card -->
+                <div class="form-card" id="photoCard">
+                    <div clss="card-content">
+                        <h3>Profile Photo</h3>
+
+                        <div class="mb-3">
+                            <label class="form-label">Profile Photo</label>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <input type="file" class="form-control" id="photoInput" name="photo" accept="image/*">
+                                <div style="display: flex; flex-wrap: wrap; gap: 15px;" id="profile-photo-container">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary btn-nav"
+                                onclick="prevCard('photoCard', 'aboutCard')">Previous</button>
+                            <button type="button" class="btn btn-secondary btn-nav"
+                                onclick="nextCard('photoCard', 'educationCard')">Next</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Education Card -->
+                <div class="form-card" id="educationCard">
+                    <div class="card-content">
+                        <h3>Education</h3>
+
+                        <div class="mb-3">
+                            <div class="row g-3" id="education-container"></div>
+                            <button type="button" class="btn btn-secondary w-100 mt-2" onclick="addEducation()">Add More
+                                Education</button>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary btn-nav"
+                                onclick="prevCard('educationCard', 'photoCard')">Previous</button>
+                            <button type="button" class="btn btn-secondary btn-nav"
+                                onclick="nextCard('educationCard', 'projectsCard')">Next</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Projects Card -->
+                <div class="form-card" id="projectsCard">
+                    <div class="card-content">
+                        <h3>Projects (optional)</h3>
+
+                        <div class="mb-3">
+                            <div class="row g-3" id="projects-container"></div>
+                            <button type="button" class="btn btn-secondary w-100 mt-2" onclick="addProject()">Add More
+                                Projects</button>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary btn-nav"
+                                onclick="prevCard('projectsCard', 'educationCard')">Previous</button>
+                            <button type="button" class="btn btn-secondary btn-nav"
+                                onclick="nextCard('projectsCard', 'experienceCard')">Next</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Experience Card -->
+                <div class="form-card" id="experienceCard">
+                    <div class="card-content">
+                        <h3>Experience (optional)</h3>
+
+                        <div class="mb-3">
+                            <div class="row g-3" id="experience-container"></div>
+                            <button type="button" class="btn btn-secondary w-100 mt-2" onclick="addExperience()">Add
+                                More
+                                Experience</button>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary btn-nav"
+                                onclick="prevCard('experienceCard', 'projectsCard')">Previous</button>
+                            <button type="button" class="btn btn-secondary btn-nav"
+                                onclick="nextCard('experienceCard', 'certificationsCard')">Next</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certifications Card -->
+                <div class="form-card" id="certificationsCard">
+                    <div class="card-content">
+                        <h3>Certifications</h3>
+
+                        <div class="mb-3">
+                            <label class="form-label">Certifications</label>
+                            <input type="file" class="form-control" name="certifications[]" id="certificationsInput"
+                                accept="image/*" multiple>
+                            <div style="display: flex; flex-wrap: wrap; gap: 15px;" id="certifications-preview"></div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary btn-nav"
+                                onclick="prevCard('certificationsCard', 'experienceCard')">Previous</button>
+                            <button type="submit" class="btn btn-primary btn-nav">Create Portfolio</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-    
-            <!-- Links -->
-            <div class="mb-3">
-                <label class="form-label">GitHub Link</label>
-                <input type="url" class="form-control" name="github_link" placeholder="https://www.github.com/yourprofile" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">LinkedIn Link</label>
-                <input type="url" class="form-control" name="linkedin_link" placeholder="https://www.linkedin.com/yourprofile" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Instagram Link</label>
-                <input type="url" class="form-control" name="instagram_link" placeholder="https://www.instagram.com/yourprofile" required>
-            </div>
-    
-            <!-- About -->
-            <div class="mb-3">
-                <label class="form-label">About</label>
-                <textarea class="form-control" name="about" rows="3" required></textarea>
-            </div>
-            <!-- Achievements -->
-            <div class="mb-3">
-                <label class="form-label">Achievements</label>
-                <textarea class="form-control" name="achievements" rows="3"></textarea>
-            </div>
-    
-            <!-- Education -->
-            <div class="mb-3">
-                <label class="form-label">Education</label>
-                <div class="row g-3" id="education-container"></div>
-                <button type="button" class="btn btn-secondary w-100 mt-2" onclick="addEducation()">Add More Education</button>
-            </div>
-    
-            <!-- Projects -->
-            <div class="mb-3">
-                <label class="form-label">Projects</label>
-                <div class="row g-3" id="projects-container"></div>
-                <button type="button" class="btn btn-secondary w-100 mt-2" onclick="addProject()">Add More Projects</button>
-            </div>
-    
-            <!-- Experience -->
-            <div class="mb-3">
-                <label class="form-label">Experience</label>
-                <div class="row g-3" id="experience-container"></div>
-                <button type="button" class="btn btn-secondary w-100 mt-2" onclick="addExperience()">Add More Experience</button>
-            </div>
-    
-            <!-- Certifications -->
-            <div class="mb-3">
-                <label class="form-label">Certifications</label>
-                <input type="file" class="form-control" name="certifications[]" id="certificationsInput" accept="image/*" multiple>
-                <div style="display: flex; flex-wrap: wrap; gap: 15px;" id="certifications-preview"></div>
-            </div>
-    
-            <button type="submit" class="btn btn-primary w-100">Create Portfolio</button>
         </form>
     </div>
-</body>
-<script>
-    // File size validation (500KB = 500 * 1024 bytes)
-    const MAX_FILE_SIZE = 500 * 1024; 
+    <script>
+        function validateCard(currentCardId) {
+            const currentCard = document.getElementById(currentCardId);
+            const requiredInputs = currentCard.querySelectorAll('input[required], textarea[required], select[required]');
 
-    // Profile photo validation
-    document.getElementById('photoInput').addEventListener('change', function(e) {
-        if (this.files && this.files[0]) {
-            if (this.files[0].size > MAX_FILE_SIZE) {
-                alert('Profile photo must be less than 500KB');
-                this.value = ''; // Clear the file input
-            } else {
-                // Preview the image
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const container = document.getElementById('profile-photo-container');
-                    container.innerHTML = ''; // Clear previous preview
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.style.width = '100px';
-                    img.style.height = '100px';
-                    img.style.objectFit = 'cover';
-                    img.style.borderRadius = '10px';
-                    container.appendChild(img);
-                }
-                reader.readAsDataURL(this.files[0]);
-            }
-        }
-    });
+            for (const input of requiredInputs) {
+                if (!input.value.trim()) {
+                    // Highlight the empty required field
+                    input.style.borderColor = '#ff6a95';
+                    input.focus();
 
-    // Certifications validation
-    document.getElementById('certificationsInput').addEventListener('change', function(e) {
-        if (this.files) {
-            const previewContainer = document.getElementById('certifications-preview');
-            previewContainer.innerHTML = ''; // Clear previous previews
-            
-            for (let i = 0; i < this.files.length; i++) {
-                if (this.files[i].size > MAX_FILE_SIZE) {
-                    alert(`File "${this.files[i].name}" exceeds 500KB limit and won't be uploaded`);
-                    continue;
-                }
-                
-                // Preview each valid image
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.style.width = '100px';
-                    img.style.height = '100px';
-                    img.style.objectFit = 'cover';
-                    img.style.borderRadius = '10px';
-                    img.style.marginRight = '10px';
-                    previewContainer.appendChild(img);
-                }
-                reader.readAsDataURL(this.files[i]);
-            }
-        }
-    });
-
-    // Form submission validation
-    document.querySelector('form').addEventListener('submit', function(e) {
-        const photoInput = document.getElementById('photoInput');
-        const certInput = document.getElementById('certificationsInput');
-        
-        // Check profile photo size if one is selected
-        if (photoInput.files.length > 0 && photoInput.files[0].size > MAX_FILE_SIZE) {
-            e.preventDefault();
-            alert('Profile photo must be less than 500KB');
-            return false;
-        }
-        
-        // Check certification sizes
-        if (certInput.files.length > 0) {
-            for (let i = 0; i < certInput.files.length; i++) {
-                if (certInput.files[i].size > MAX_FILE_SIZE) {
-                    e.preventDefault();
-                    alert('One or more certification files exceed 500KB limit');
+                    // Show alert
+                    alert(`Please fill in all required fields.\nMissing: ${input.labels[0].textContent}`);
                     return false;
                 }
             }
+            return true;
         }
-        
-        return true;
-    });
-</script>
-</html>
+        function nextCard(currentCardId, nextCardId) {
+            // First validate the current card
+            if (!validateCard(currentCardId)) {
+                return; // Stop if validation fails
+            }
+
+            const currentCard = document.getElementById(currentCardId);
+            const nextCard = document.getElementById(nextCardId);
+
+            currentCard.classList.remove('active');
+            currentCard.classList.add('exit-to-left');
+
+            nextCard.classList.remove('hidden');
+            nextCard.style.display = 'block';
+            nextCard.classList.add('enter-from-right');
+
+            setTimeout(() => {
+                currentCard.classList.remove('exit-to-left');
+                currentCard.style.display = 'none';
+
+                nextCard.classList.remove('enter-from-right');
+                nextCard.classList.add('active');
+
+                updateProgressSteps(nextCardId);
+            }, 500);
+        }
+
+        function prevCard(currentCardId, prevCardId) {
+            const currentCard = document.getElementById(currentCardId);
+            const prevCard = document.getElementById(prevCardId);
+
+            currentCard.classList.remove('active');
+            currentCard.classList.add('exit-to-right');
+
+            prevCard.classList.remove('hidden');
+            prevCard.style.display = 'block';
+            prevCard.classList.add('enter-from-left');
+
+            setTimeout(() => {
+                currentCard.classList.remove('exit-to-right');
+                currentCard.style.display = 'none';
+
+                prevCard.classList.remove('enter-from-left');
+                prevCard.classList.add('active');
+
+                updateProgressSteps(prevCardId);
+                scrollToTop();
+            }, 500);
+        }
+
+        function updateProgressSteps(activeCardId) {
+            const steps = document.querySelectorAll('.step');
+            const cardOrder = [
+                'personalInfoCard',
+                'linksCard',
+                'aboutCard',
+                'photoCard',
+                'educationCard',
+                'projectsCard',
+                'experienceCard',
+                'certificationsCard'
+            ];
+
+            const activeIndex = cardOrder.indexOf(activeCardId);
+
+            steps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < activeIndex) {
+                    step.classList.add('completed');
+                } else if (index === activeIndex) {
+                    step.classList.add('active');
+                }
+            });
+        }
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Initialize form with first card active
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set first step as active
+            updateProgressSteps('personalInfoCard');
+
+            // Add animation classes to all cards except first
+            const cards = document.querySelectorAll('.form-card:not(#personalInfoCard)');
+            cards.forEach(card => {
+                card.classList.add('hidden');
+            });
+        });
+
+        // File size validation (500KB = 500 * 1024 bytes)
+        const MAX_FILE_SIZE = 500 * 1024;
+
+        // Profile photo validation
+        document.getElementById('photoInput').addEventListener('change', function (e) {
+            if (this.files && this.files[0]) {
+                if (this.files[0].size > MAX_FILE_SIZE) {
+                    alert('Profile photo must be less than 500KB');
+                    this.value = ''; // Clear the file input
+                } else {
+                    // Preview the image
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const container = document.getElementById('profile-photo-container');
+                        container.innerHTML = ''; // Clear previous preview
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.width = '100px';
+                        img.style.height = '100px';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '10px';
+                        container.appendChild(img);
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            }
+        });
+
+        // Certifications validation
+        document.getElementById('certificationsInput').addEventListener('change', function (e) {
+            if (this.files) {
+                const previewContainer = document.getElementById('certifications-preview');
+                previewContainer.innerHTML = ''; // Clear previous previews
+
+                for (let i = 0; i < this.files.length; i++) {
+                    if (this.files[i].size > MAX_FILE_SIZE) {
+                        alert(`File "${this.files[i].name}" exceeds 500KB limit and won't be uploaded`);
+                        continue;
+                    }
+
+                    // Preview each valid image
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.width = '100px';
+                        img.style.height = '100px';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '10px';
+                        img.style.marginRight = '10px';
+                        previewContainer.appendChild(img);
+                    }
+                    reader.readAsDataURL(this.files[i]);
+                }
+            }
+        });
+
+        // Form submission validation
+        Copy
+        document.querySelector('form').addEventListener('submit', function (e) {
+            // Validate the last card
+            if (!validateCard('certificationsCard')) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Continue with your existing file size validation
+            const photoInput = document.getElementById('photoInput');
+            const certInput = document.getElementById('certificationsInput');
+
+            if (photoInput.files.length > 0 && photoInput.files[0].size > MAX_FILE_SIZE) {
+                e.preventDefault();
+                alert('Profile photo must be less than 500KB');
+                return false;
+            }
+            // Check certification sizes
+            if (certInput.files.length > 0) {
+                for (let i = 0; i < certInput.files.length; i++) {
+                    if (certInput.files[i].size > MAX_FILE_SIZE) {
+                        e.preventDefault();
+                        alert('One or more certification files exceed 500KB limit');
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        });
+    </script>
