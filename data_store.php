@@ -1,7 +1,9 @@
 <?php
+// 1. Start session ONLY if it doesn't exist
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
 require 'vendor/autoload.php'; // MongoDB
 
 require 'mongodb_connection.php';
@@ -12,7 +14,8 @@ $collection = $client->portfolio->details;
 
 // Ensure user is logged in
 if (!isset($_SESSION['user_id'])) {
-    die(json_encode(["success" => false, "message" => "User not logged in."]));
+    header("Location: index.html");
+    exit;
 }
 
 $user_id = $_SESSION['user_id'];

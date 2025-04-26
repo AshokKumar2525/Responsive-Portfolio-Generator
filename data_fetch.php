@@ -1,5 +1,9 @@
 <?php
-session_start();
+// 1. Start session ONLY if it doesn't exist
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 header('Content-Type: application/json');
 
 // MongoDB Connection
@@ -12,11 +16,12 @@ $client = MongoDBManager::getClient();
 $collection = $client->portfolio->details;
 
 // Check if user is logged in
-$user_id = $_SESSION['user_id'] ?? null;
-if (!$user_id) {
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401); // Unauthorized
     die(json_encode(["error" => "User not logged in"]));
 }
 
+$user_id = $_SESSION['user_id'];
 // Fetch user document from MongoDB
 $user = $collection->findOne(["user_id" => $user_id]);
 

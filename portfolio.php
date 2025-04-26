@@ -1,6 +1,24 @@
 <?php
 header('Content-Type: application/json');
-session_start();
+// 1. Start session ONLY if it doesn't exist
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// 2. Add THIS at the top to handle logout requests
+if (isset($_GET['action']) && $_GET['action'] === 'logout') {
+    // Nuclear option to destroy session
+    session_unset();
+    session_destroy();
+    session_write_close();
+    setcookie(session_name(), '', 0, '/');
+    
+    // Clear client-side cache headers
+    header("Cache-Control: no-store, no-cache, must-revalidate");
+    header("Expires: Thu, 01 Jan 1970 00:00:00 GMT");
+    header("Location: index.html");
+    exit();
+}
 
 require 'vendor/autoload.php';
 require 'mongodb_connection.php';
