@@ -55,24 +55,33 @@
     animation: fadeIn 0.8s ease-out;
   }
   
-  header nav ul {
-    list-style: none;
-    display: flex;
-    justify-content: flex-end;
-    gap: 1.5rem;
-  }
-  
-  header nav ul li a {
-    color: var(--light-text);
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    position: relative;
-  }
-  
+  /* Updated Navbar Styles */
+header nav ul {
+  list-style: none;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem; /* Reduced from 1.5rem */
+  flex-wrap: wrap; /* Allows wrapping if needed */
+}
+
+header nav ul li a {
+  color: var(--light-text);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem; /* Slightly smaller */
+  padding: 0.5rem 0.8rem; /* Reduced from 1rem */
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-flex; /* Better icon alignment */
+  align-items: center;
+}
+
+header nav ul li a i {
+  font-size: 0.95rem; /* Smaller icons */
+  margin-right: 0.3rem; /* Reduced spacing */
+  transition: all 0.3s ease;
+}
   header nav ul li a::after {
     content: '';
     position: absolute;
@@ -84,15 +93,50 @@
     transition: all 0.3s ease;
     transform: translateX(-50%);
   }
-  
   header nav ul li a:hover {
     color: var(--primary-color);
   }
-  
   header nav ul li a:hover::after {
     width: 100%;
   }
-  
+
+  @media (max-width: 768px) {
+    .nav-link {
+        padding: 0.75rem; /* Slightly reduced */
+        justify-content: center;
+        gap: 0.4rem; /* Reduced from 0.5rem */
+    }
+    
+    .nav-link i {
+        font-size: 1rem; /* Slightly smaller */
+        margin-right: 0; /* Remove right margin */
+    }
+    
+    /* Compact mobile menu */
+    .nav {
+        padding: 0.5rem 0; /* Reduced padding */
+    }
+    
+    .nav-item {
+        padding: 0.2rem 0; /* Tighter spacing */
+    }
+}
+
+/* Compact navbar when scrolled */
+header.scrolled {
+  padding: 0.7rem 1.5rem;
+  backdrop-filter: blur(8px);
+}
+
+header.scrolled nav ul li a {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.9rem;
+}
+
+header.scrolled nav ul li a i {
+  font-size: 0.85rem;
+}
+
   /* Section Styling */
   section {
     padding: 4rem 0;

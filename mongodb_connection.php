@@ -6,7 +6,7 @@ class MongoDBManager {
     private static $uri;
 
     public static function initialize() {
-        self::$uri = "mongodb+srv://ashokkumarmalineni25:" . urlencode("Ashok@123") . "@cluster0.cbkwvdk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+        self::$uri = "mongodb+srv://ashokkumarmalineni25:Ashok%40123@cluster0.cbkwvdk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
     }
 
     public static function getClient() {
@@ -35,7 +35,33 @@ class MongoDBManager {
 
         for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
             try {
-                self::$client = new MongoDB\Client(self::$uri);
+                $context = stream_context_create([
+                    'ssl' => [
+                        'verify_peer' => false,
+                        'verify_peer_name' => false,
+                        'allow_self_signed' => true
+                    ]
+                ]);
+
+                self::$client = new MongoDB\Client(
+                    self::$uri,
+                    [
+                        'username' => 'ashokkumarmalineni25',
+                        'password' => 'Ashok@123',
+                        'authSource' => 'admin'
+                    ],
+                    [
+                        'serverSelectionTryOnce' => false,
+                        'serverSelectionTimeoutMS' => 10000,
+                        'connectTimeoutMS' => 10000,
+                        'socketTimeoutMS' => 10000,
+                        'ssl' => true,
+                        'tls' => true,
+                        'context' => $context
+                    ]
+                );
+
+                // Force connection test
                 self::$client->listDatabases();
                 return true;
             } catch (Exception $e) {
@@ -49,6 +75,6 @@ class MongoDBManager {
     }
 }
 
-// Initialize the connection URI when the class is first loaded
+// Initialize the connection when the class is loaded
 MongoDBManager::initialize();
 ?>
