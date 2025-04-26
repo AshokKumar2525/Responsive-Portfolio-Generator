@@ -1,18 +1,16 @@
 <?php
 session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "Ashok@123"; 
-$dbname = "portfolio";
+// require 'vendor/autoload.php'; // MongoDB PHP library
+require 'mongodb_connection.php';
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die(json_encode(['success' => false, 'error' => 'Database connection failed']));
-}
+// Get MongoDB client
+$client = MongoDBManager::getClient();
+$db = $client->portfolio;
+$users = $db->users;
 
-// Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
@@ -23,35 +21,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // Check if email exists
-    $sql = "SELECT id, password FROM users WHERE email = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->store_result();
+    // Find user by email
+    $user = $users->findOne(['email' => $email]);
 
-    if ($stmt->num_rows === 0) {
+    if (!$user) {
         echo "<script>alert('No Account Found With This Email!'); window.location.href = 'index.html';</script>";
         exit();
     }
 
-    $stmt->bind_result($user_id, $hashed_password);
-    $stmt->fetch();
-
     // Verify password
-    if (!password_verify($password, $hashed_password)) {
+    if (!password_verify($password, $user['password'])) {
         echo "<script>alert('Incorrect Password! Try again.'); window.location.href = 'index.html';</script>";
         exit();
     }
 
     // Store user ID in session
-    $_SESSION['user_id'] = $user_id;
+    $_SESSION['user_id'] = (string)$user['_id'];
     $_SESSION['user_email'] = $email;
 
-    
     header("Location: main.html");
     exit;
 }
-
-$conn->close();
 ?>

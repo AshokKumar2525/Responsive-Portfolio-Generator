@@ -5,13 +5,11 @@ use PHPMailer\PHPMailer\Exception;
 
 require 'vendor/autoload.php';
 
-
 if (!isset($_POST['name'], $_POST['email'], $_POST['message'])) {
     error_log("Invalid form data received");
     echo json_encode(['success' => false, 'error' => 'Invalid form data']);
     exit;
 }
-
 
 // Verify session email
 if (!isset($_SESSION['user_email'])) {
@@ -20,22 +18,34 @@ if (!isset($_SESSION['user_email'])) {
     exit;
 }
 
+// Sanitize input data to prevent XSS or injection attacks
+$name = htmlspecialchars($_POST['name']);
+$email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+$message = nl2br(htmlspecialchars($_POST['message']));
+
+// Verify email format
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    error_log("Invalid email format: $email");
+    echo json_encode(['success' => false, 'error' => 'Invalid email format']);
+    exit;
+}
+
 $mail = new PHPMailer(true);
 try {
     // SMTP Configuration
     $mail->isSMTP();
-    $mail->Host = 'smtp.gmail.com';
+    $mail->Host = getenv('SMTP_HOST') ?: 'smtp.gmail.com'; // Use environment variable for security
     $mail->SMTPAuth = true;
-    $mail->Username = 'ashokkumarmalineni25@gmail.com';
-    $mail->Password = 'ybpu pirp poso rths';
+    $mail->Username = getenv('SMTP_USERNAME') ?: 'ashokkumarmalineni25@gmail.com'; // Environment variable for email
+    $mail->Password = getenv('SMTP_PASSWORD') ?: 'ybpu pirp poso rths'; // Environment variable for password
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
     $mail->Port = 465;
-    $mail->SMTPDebug = 2;
+    $mail->SMTPDebug = 0; // Disable SMTP debugging in production
 
     // Recipients
-    $mail->setFrom($_POST['email'], $_POST['name']);
+    $mail->setFrom($email, $name);
     $mail->addAddress($_SESSION['user_email']);
-    
+
     // Content
     $mail->isHTML(true);
     $mail->Subject = 'New Contact Form Submission from Portfolio';
@@ -44,14 +54,14 @@ try {
         <p><strong>Name:</strong> %s</p>
         <p><strong>Email:</strong> %s</p>
         <p><strong>Message:</strong> %s</p>",
-        htmlspecialchars($_POST['name']),
-        htmlspecialchars($_POST['email']),
-        nl2br(htmlspecialchars($_POST['message']))
+        $name,
+        $email,
+        $message
     );
 
     if ($mail->send()) {
         header("Location: portfolio.html");
-
+        exit;
     } else {
         throw new Exception('Send returned false');
     }
@@ -63,3 +73,4 @@ try {
         "debug" => $e->getMessage()
     ]);
 }
+?>

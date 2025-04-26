@@ -438,7 +438,17 @@ select:invalid {
 .form-container::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(#764ba2, #ff6a95);
 }
+/* Icon styling */
+.form-label i {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
 
+/* Adjust input padding to account for icons */
+.form-control {
+    padding-left: 10px;
+}
 
 /* Card Animation System */
 .form-card-wrapper {
@@ -538,6 +548,7 @@ select:invalid {
     display: flex;
     justify-content: center;
     margin-bottom: 2rem;
+    border-radius: 20px;
     gap: 12px;
 }
 

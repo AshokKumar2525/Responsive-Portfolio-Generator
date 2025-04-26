@@ -46,77 +46,86 @@ function populateFields(containerId, data, addFunction) {
 }
 
 // Add dynamic education fields
-function addEducation(entry = {}) {
+function addEducation(entry = {}, index = document.querySelectorAll('#education-container .row.g-2').length) {
     let container = document.getElementById("education-container");
     let div = document.createElement("div");
-    div.className = "row g-2 position-relative"; // Added position-relative for absolute positioning of remove button
+    div.className = "row g-2 position-relative";
 
     div.innerHTML = `
-        <div class="col-md-4">
-            <input type="text" class="form-control" placeholder="Degree, Institute Name" name="education[]" value="${entry.institution || ''}" required>
-        </div>
-        <div class="col-md-4">
-            <input type="text" class="form-control" placeholder="Duration : 2020-2024" name="education[]" value="${entry.duration || ''}" required>
-        </div>
-        <div class="col-md-4">
-            <input type="text" class="form-control" placeholder="Grade : 9.23" name="education[]" value="${entry.grade || ''}" required>
-        </div>
-        <button type="button" class="btn-remove" onclick="this.parentNode.remove()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-            </svg>
-        </button>
-    `;
+    <div class="col-md-4">
+        <label class="form-label"><i class="fas fa-graduation-cap text-primary me-2"></i>Degree/Institute</label>
+        <input type="text" class="form-control" placeholder="Degree, Institute Name" name="education[${index}][institution]" value="${entry.institution || ''}" required>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label"><i class="fas fa-calendar-alt text-success me-2"></i>Duration</label>
+        <input type="text" class="form-control" placeholder="Duration : 2020-2024" name="education[${index}][duration]" value="${entry.duration || ''}" required>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label"><i class="fas fa-star text-warning me-2"></i>Grade</label>
+        <input type="text" class="form-control" placeholder="Grade : 9.23" name="education[${index}][grade]" value="${entry.grade || ''}" required>
+    </div>
+    <button type="button" class="btn-remove" onclick="this.parentNode.remove()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+    </button>
+`;
     container.appendChild(div);
 }
 
 // Add dynamic project fields
-function addProject(entry = {}) {
+function addProject(entry = {}, index = document.querySelectorAll('#projects-container .row.g-2').length) {
     let container = document.getElementById("projects-container");
     let div = document.createElement("div");
     div.className = "row g-2 position-relative";
 
     div.innerHTML = `
-        <div class="col-md-4">
-            <input type="text" class="form-control" placeholder="Project Name" name="projects[]" value="${entry.projectName || ''}">
-        </div>
-        <div class="col-md-4">
-            <input type="text" class="form-control" placeholder="Description" name="projects[]" value="${entry.description || ''}">
-        </div>
-        <div class="col-md-4">
-            <input type="text" class="form-control" placeholder="GitRepo Link" name="projects[]" value="${entry.gitrepolink || ''}">
-        </div>
-        <button type="button" class="btn-remove" onclick="this.parentNode.remove()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-            </svg>
-        </button>
-    `;
+    <div class="col-md-4">
+        <label class="form-label"><i class="fas fa-project-diagram text-info me-2"></i>Project Name</label>
+        <input type="text" class="form-control" placeholder="Project Name" name="projects[${index}][projectName]" value="${entry.projectName || ''}">
+    </div>
+    <div class="col-md-4">
+        <label class="form-label"><i class="fas fa-file-alt text-secondary me-2"></i>Description</label>
+        <input type="text" class="form-control" placeholder="Description" name="projects[${index}][description]" value="${entry.description || ''}">
+    </div>
+    <div class="col-md-4">
+        <label class="form-label"><i class="fab fa-github text-dark me-2"></i>GitRepo Link</label>
+        <input type="text" class="form-control" placeholder="GitRepo Link" name="projects[${index}][gitrepolink]" value="${entry.gitrepolink || ''}">
+    </div>
+    <button type="button" class="btn-remove" onclick="this.parentNode.remove()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+    </button>
+`;
     container.appendChild(div);
 }
 
 // Add dynamic experience fields
-function addExperience(entry = {}) {
+function addExperience(entry = {}, index = document.querySelectorAll('#experience-container .row.g-2').length) {
     let container = document.getElementById("experience-container");
     let div = document.createElement("div");
     div.className = "row g-2 position-relative";
 
     div.innerHTML = `
-        <div class="col-md-4">
-            <input type="text" class="form-control" placeholder="Company Name" name="experience[]" value="${entry.company || ''}">
-        </div>
-        <div class="col-md-4">
-            <input type="text" class="form-control" placeholder="Role" name="experience[]" value="${entry.role || ''}">
-        </div>
-        <div class="col-md-4">
-            <input type="text" class="form-control" placeholder="Years Worked" name="experience[]" value="${entry.years || ''}">
-        </div>
-        <button type="button" class="btn-remove" onclick="this.parentNode.remove()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-            </svg>
-        </button>
-    `;
+    <div class="col-md-4">
+        <label class="form-label"><i class="fas fa-building text-primary me-2"></i>Company Name</label>
+        <input type="text" class="form-control" placeholder="Company Name" name="experience[${index}][company]" value="${entry.company || ''}">
+    </div>
+    <div class="col-md-4">
+        <label class="form-label"><i class="fas fa-user-tie text-success me-2"></i>Role</label>
+        <input type="text" class="form-control" placeholder="Role" name="experience[${index}][role]" value="${entry.role || ''}">
+    </div>
+    <div class="col-md-4">
+        <label class="form-label"><i class="fas fa-clock text-warning me-2"></i>Years Worked</label>
+        <input type="text" class="form-control" placeholder="Years Worked" name="experience[${index}][years]" value="${entry.years || ''}">
+    </div>
+    <button type="button" class="btn-remove" onclick="this.parentNode.remove()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+    </button>
+`;
     container.appendChild(div);
 }
 
@@ -125,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch("data_fetch.php")
         .then(response => response.json())
         .then(data => {
-            console.log("data fetched : " + data);
+            // console.log("data fetched : " + data);
             if (data.error) {
                 console.log("No logged-in user. Showing empty form.");
                 populateFields("education-container", null, addEducation);

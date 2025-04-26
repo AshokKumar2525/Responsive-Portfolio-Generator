@@ -1,10 +1,20 @@
 // Fetch user details from portfolio.php
 document.addEventListener('DOMContentLoaded', function () {
-    fetch('../portfolio.php')
-        .then(res => res.json())
+    const errorDisplay = document.createElement('div');
+    errorDisplay.id = 'error-message';
+    errorDisplay.style.display = 'none';
+    document.body.prepend(errorDisplay);
+
+    fetch('portfolio.php')
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+        })
         .then(data => {
             if (data.error) {
-                console.error(data.error);
+                showError(data.error);
                 return;
             }
             // Populate basic details
@@ -19,13 +29,21 @@ document.addEventListener('DOMContentLoaded', function () {
             populateAchievements(data);
             animateJobRoles(data);
             setupCertificateModal();
-
-
         })
         .catch(error => {
-            console.error("Error fetching data:", error);
-            showErrorMessages();
+            showError(error.message);
+            console.error("Error:", error);
         });
+
+    function showError(message) {
+        errorDisplay.textContent = `Error: ${message}`;
+        errorDisplay.style.display = 'block';
+        errorDisplay.style.color = 'red';
+        errorDisplay.style.padding = '1rem';
+        errorDisplay.style.backgroundColor = '#ffeeee';
+        errorDisplay.style.border = '1px solid red';
+        errorDisplay.style.margin = '1rem';
+    }
 
     // Initialize tooltips
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));

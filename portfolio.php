@@ -1,76 +1,52 @@
 <?php
-// Add this at the top of your portfolio.php
-// header('Content-Type: application/json');
+header('Content-Type: application/json');
 session_start();
 
-// // Database connection
-$conn = new mysqli("localhost", "root", "Ashok@123", "portfolio");
-if ($conn->connect_error) {
-    echo json_encode([
-        "error" => "Database connection failed: " . $conn->connect_error,
-        "success" => false
-    ]);
+require 'vendor/autoload.php';
+require 'mongodb_connection.php';
+
+// Get MongoDB client
+$client = MongoDBManager::getClient();
+$collection = $client->portfolio->details;
+
+// First try to get user_id from session, then from GET/POST
+$user_id = $_SESSION['user_id'] ?? $_GET['user_id'] ?? $_POST['user_id'] ?? null;
+
+if (!$user_id) {
+    echo json_encode(["success" => false, "error" => "User not identified"]);
     exit;
 }
 
-
-if (!isset($_SESSION['user_email']) && isset($data['email'])) {
-    $_SESSION['user_email'] = $data['email'];
+// Find user by ID first, then fallback to email
+$user = $collection->findOne(['user_id' => $user_id]);
+if (!$user && isset($_SESSION['user_email'])) {
+    $user = $collection->findOne(['email' => $_SESSION['user_email']]);
 }
 
-
-$user_id = $_SESSION['user_id'];
-
-// Fetch user details from the database
-$sql = "SELECT * FROM details WHERE user_id = ?";
-$stmt = $conn->prepare($sql);
-if (!$stmt) {
-    echo json_encode([
-        "error" => "Failed to prepare SQL statement: " . $conn->error,
-        "success" => false
-    ]);
+if (!$user) {
+    echo json_encode(["success" => false, "error" => "User data not found"]);
     exit;
 }
 
-
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows === 0) {
-    echo json_encode([
-        "error" => "No details found for the user.",
-        "success" => false
-    ]);
-    exit;
-}
-
-$row = $result->fetch_assoc();
-// Prepare the data to send as JSON
-
+// Prepare response data
 $data = [
     "success" => true,
-    "name" => $row['name'],
-    "job_roles" => $row['job_roles'],
-    "email" => $row['email'],
-    "mobile" => $row['mobile'],
-    "skills" => $row['skills'],
-    "about" => $row['about'],
-    "github_link" => $row['github_link'],
-    "linkedin_link" => $row['linkedin_link'],
-    "instagram_link" => $row['instagram_link'],
-    "photo_url" => $row['image_url'] ?: "placeholder.jpg",
-    "education" => json_decode($row['education'], true) ?: [],
-    "projects" => json_decode($row['projects'], true) ?: [],
-    "experience" => json_decode($row['experience'], true) ?: [],
-    "certifications" => json_decode($row['certifications'], true) ?: [],
-    'achievements' => $row['achievements'] ? explode("\n", $row['achievements']) : []
+    "name" => $user['name'] ?? "",
+    "job_roles" => $user['job_roles'] ?? "",
+    "email" => $user['email'] ?? "",
+    "mobile" => $user['mobile'] ?? "",
+    "skills" => $user['skills'] ?? "",
+    "about" => $user['about'] ?? "",
+    "github_link" => $user['github_link'] ?? "",
+    "linkedin_link" => $user['linkedin_link'] ?? "",
+    "instagram_link" => $user['instagram_link'] ?? "",
+    "photo_url" => $user['image_url'] ?? "/static/images/placeholder.jpg",
+    "education" => $user['education'] ?? [],
+    "projects" => $user['projects'] ?? [],
+    "experience" => $user['experience'] ?? [],
+    "certifications" => $user['certifications'] ?? [],
+    "achievements" => isset($user['achievements']) ? (is_array($user['achievements'])) ? $user['achievements'] : explode("\n", $user['achievements']) : []
 ];
 
-// Send the data as JSON
 echo json_encode($data);
-
-// Close the database connection
-$stmt->close();
-$conn->close();
 ?>

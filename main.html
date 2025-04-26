@@ -8,11 +8,119 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="/static/js/main.js"></script>
-
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+        }
+        
+        #bubbles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(5px);
+            opacity: 0.7;
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-100px) translateX(50px) rotate(180deg);
+            }
+            100% {
+                transform: translateY(0) translateX(100px) rotate(360deg);
+            }
+        }
+        
+        /* Your form container styling */
+        .form-container {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            margin: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const bubblesContainer = document.getElementById('bubbles');
+            const bubbleCount = 30;
+            const colors = [
+                'rgba(255, 107, 107, 0.7)',    // Soft red
+                'rgba(255, 159, 67, 0.7)',     // Orange
+                'rgba(254, 202, 87, 0.7)',     // Yellow
+                'rgba(29, 209, 161, 0.7)',     // Teal
+                'rgba(72, 219, 251, 0.7)',     // Light blue
+                'rgba(120, 111, 166, 0.7)',     // Purple
+                'rgba(225, 112, 85, 0.7)',      // Coral
+                'rgba(214, 162, 232, 0.7)'      // Lavender
+            ];
+            
+            for (let i = 0; i < bubbleCount; i++) {
+                const bubble = document.createElement('div');
+                bubble.classList.add('bubble');
+                
+                // Random properties
+                const size = Math.random() * 100 + 50;
+                const posX = Math.random() * window.innerWidth;
+                const posY = Math.random() * window.innerHeight;
+                const delay = Math.random() * 10;
+                const duration = 10 + Math.random() * 20;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${posX}px`;
+                bubble.style.top = `${posY}px`;
+                bubble.style.background = color;
+                bubble.style.animationDelay = `${delay}s`;
+                bubble.style.animationDuration = `${duration}s`;
+                
+                // Add subtle shadow
+                bubble.style.boxShadow = `0 0 ${size/2}px ${size/4}px ${color.replace('0.7', '0.3')}`;
+                
+                bubblesContainer.appendChild(bubble);
+            }
+            
+            // Make bubbles responsive
+            window.addEventListener('resize', function() {
+                document.querySelectorAll('.bubble').forEach(bubble => {
+                    const currentLeft = parseFloat(bubble.style.left);
+                    const currentTop = parseFloat(bubble.style.top);
+                    
+                    bubble.style.left = `${(currentLeft / window.innerWidth) * 100}%`;
+                    bubble.style.top = `${(currentTop / window.innerHeight) * 100}%`;
+                });
+            });
+        });
+    </script>
 </head>
 
 <body>
+    <div id="bubbles"></div>
+
     <div class="form-container">
         <h2 class="text-center">User Profile Details</h2>
 
@@ -37,25 +145,24 @@
                     <div class="card-content">
                         <h3>Personal Information</h3>
                         <div class="mb-3">
-                            <label class="form-label">Full Name</label>
+                            <label class="form-label"><i class="fas fa-user text-primary me-2"></i>Full Name</label>
                             <input type="text" class="form-control" name="name" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Email</label>
+                            <label class="form-label"><i class="fas fa-envelope text-danger me-2"></i>Email</label>
                             <input type="email" class="form-control" name="email" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Mobile</label>
+                            <label class="form-label"><i class="fas fa-mobile-alt text-success me-2"></i>Mobile</label>
                             <input type="text" class="form-control" name="mobile" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Skills (comma-separated)</label>
+                            <label class="form-label"><i class="fas fa-code text-warning me-2"></i>Skills (comma-separated)</label>
                             <input type="text" class="form-control" name="skills" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Job Roles</label>
-                            <input type="text" class="form-control" name="job_roles"
-                                placeholder="e.g., Web Developer, Researcher" required>
+                            <label class="form-label"><i class="fas fa-briefcase text-info me-2"></i>Job Roles</label>
+                            <input type="text" class="form-control" name="job_roles" placeholder="e.g., Web Developer, Researcher" required>
                         </div>
 
                         <div class="form-navigation">
@@ -70,19 +177,16 @@
                         <h3>Social Links</h3>
 
                         <div class="mb-3">
-                            <label class="form-label">GitHub Link</label>
-                            <input type="url" class="form-control" name="github_link"
-                                placeholder="https://www.github.com/yourprofile" required>
+                            <label class="form-label"><i class="fab fa-github text-dark me-2"></i>GitHub Link</label>
+                            <input type="url" class="form-control" name="github_link" placeholder="https://www.github.com/yourprofile" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">LinkedIn Link</label>
-                            <input type="url" class="form-control" name="linkedin_link"
-                                placeholder="https://www.linkedin.com/yourprofile" required>
+                            <label class="form-label"><i class="fab fa-linkedin text-primary me-2"></i>LinkedIn Link</label>
+                            <input type="url" class="form-control" name="linkedin_link" placeholder="https://www.linkedin.com/yourprofile" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Instagram Link (optional)</label>
-                            <input type="url" class="form-control" name="instagram_link"
-                                placeholder="https://www.instagram.com/yourprofile">
+                            <label class="form-label"><i class="fab fa-instagram text-danger me-2"></i>Instagram Link (optional)</label>
+                            <input type="url" class="form-control" name="instagram_link" placeholder="https://www.instagram.com/yourprofile">
                         </div>
 
                         <div class="form-navigation">
@@ -100,11 +204,11 @@
                         <h3>About & Achievements</h3>
 
                         <div class="mb-3">
-                            <label class="form-label">About</label>
+                            <label class="form-label"><i class="fas fa-info-circle text-info me-2"></i>About</label>
                             <textarea class="form-control" name="about" rows="3" required></textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Achievements (optional)</label>
+                            <label class="form-label"><i class="fas fa-trophy text-warning me-2"></i>Achievements (optional)</label>
                             <textarea class="form-control" name="achievements" rows="3"></textarea>
                         </div>
 
@@ -122,7 +226,7 @@
                         <h3>Profile Photo</h3>
 
                         <div class="mb-3">
-                            <label class="form-label">Profile Photo</label>
+                            <label class="form-label"><i class="fas fa-camera text-secondary me-2"></i>Profile Photo</label>
                             <div style="display: flex; align-items: center; gap: 15px;">
                                 <input type="file" class="form-control" id="photoInput" name="photo" accept="image/*">
                                 <div style="display: flex; flex-wrap: wrap; gap: 15px;" id="profile-photo-container">
@@ -203,9 +307,8 @@
                         <h3>Certifications</h3>
 
                         <div class="mb-3">
-                            <label class="form-label">Certifications</label>
-                            <input type="file" class="form-control" name="certifications[]" id="certificationsInput"
-                                accept="image/*" multiple>
+                            <label class="form-label"><i class="fas fa-certificate text-danger me-2"></i>Certifications</label>
+                            <input type="file" class="form-control" name="certifications[]" id="certificationsInput" accept="image/*" multiple>
                             <div style="display: flex; flex-wrap: wrap; gap: 15px;" id="certifications-preview"></div>
                         </div>
 
@@ -365,13 +468,12 @@
                 const previewContainer = document.getElementById('certifications-preview');
                 previewContainer.innerHTML = ''; // Clear previous previews
 
-                for (let i = 0; i < this.files.length; i++) {
-                    if (this.files[i].size > MAX_FILE_SIZE) {
-                        alert(`File "${this.files[i].name}" exceeds 500KB limit and won't be uploaded`);
-                        continue;
+                Array.from(this.files).forEach(file => {
+                    if (file.size > MAX_FILE_SIZE) {
+                        alert(`"${file.name}" exceeds the 500KB limit and will be skipped.`);
+                        return;
                     }
 
-                    // Preview each valid image
                     const reader = new FileReader();
                     reader.onload = function (e) {
                         const img = document.createElement('img');
@@ -380,16 +482,16 @@
                         img.style.height = '100px';
                         img.style.objectFit = 'cover';
                         img.style.borderRadius = '10px';
-                        img.style.marginRight = '10px';
                         previewContainer.appendChild(img);
                     }
-                    reader.readAsDataURL(this.files[i]);
-                }
+                    reader.readAsDataURL(file);
+                });
             }
         });
 
+
         // Form submission validation
-        Copy
+        // Copy
         document.querySelector('form').addEventListener('submit', function (e) {
             // Validate the last card
             if (!validateCard('certificationsCard')) {

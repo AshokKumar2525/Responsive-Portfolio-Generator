@@ -8,21 +8,24 @@ if (!isset($_SESSION['otp_data'])) {
 $otp_data = $_SESSION['otp_data'];
 $email = $_GET['email'] ?? '';
 
+// Handle OTP form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_otp = filter_input(INPUT_POST, 'otp', FILTER_SANITIZE_NUMBER_INT);
-    
-    // Check if OTP is expired
+
+    // Check OTP expiration
     if (time() > $otp_data['expiry']) {
+        unset($_SESSION['otp_data']); // Clean up expired OTP
         die("OTP has expired. Please request a new one.");
     }
-    
-    // Verify OTP
+
+    // Validate OTP
     if ($user_otp == $otp_data['otp']) {
         $_SESSION['otp_verified'] = true;
+        $_SESSION['verified_email'] = $otp_data['email'];
         header("Location: reset_password.php");
         exit();
     } else {
-        die("Invalid OTP. Please try again.");
+        $error = "Invalid OTP. Please try again.";
     }
 }
 ?>
@@ -39,6 +42,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="card-body">
             <h4 class="card-title">Verify OTP</h4>
             <p class="text-muted">Enter the OTP sent to <?= htmlspecialchars($email) ?></p>
+
+            <?php if (!empty($error)): ?>
+                <div class="alert alert-danger"><?= $error ?></div>
+            <?php endif; ?>
+
             <form method="POST">
                 <div class="mb-3">
                     <input type="text" class="form-control" name="otp" placeholder="6-digit OTP" required maxlength="6">

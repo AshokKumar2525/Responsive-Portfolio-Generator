@@ -6,35 +6,41 @@ if (!isset($_SESSION['otp_verified']) || !$_SESSION['otp_verified']) {
     die("Access denied. Verify OTP first.");
 }
 
-// Database connection
-$con = mysqli_connect("localhost", "root", "Ashok@123", "portfolio");
-if (!$con) die("Database connection failed: " . mysqli_connect_error());
+// MongoDB setup
+require 'mongodb_connection.php'; // Use our centralized connection
 
+// Get MongoDB client
+$client = MongoDBManager::getClient();
+$collection = $client->portfolio->users;
+
+// Get email from session
 $email = $_SESSION['otp_data']['email'] ?? '';
 if (empty($email)) die("Session error.");
 
+// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
-    // Validate
+    // Basic validation
     if (strlen($new_password) < 8) die("Password must be at least 8 characters.");
     if ($new_password !== $confirm_password) die("Passwords don't match.");
 
-    // Update password in database
+    // Hash and update password
     $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-    $stmt = mysqli_prepare($con, "UPDATE users SET password = ? WHERE email = ?");
-    mysqli_stmt_bind_param($stmt, "ss", $hashed_password, $email);
-    
-    if (mysqli_stmt_execute($stmt)) {
-        // Clear session
+
+    $updateResult = $collection->updateOne(
+        ['email' => $email],
+        ['$set' => ['password' => $hashed_password]]
+    );
+
+    if ($updateResult->getModifiedCount() > 0) {
         session_unset();
         session_destroy();
         echo "Password updated successfully! <a href='index.html'>Login now</a>.";
     } else {
-        die("Error updating password: " . mysqli_error($con));
+        die("Error updating password. Try again.");
     }
-    mysqli_close($con);
 }
 ?>
 <!DOCTYPE html>

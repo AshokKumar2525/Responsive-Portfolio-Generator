@@ -1,70 +1,57 @@
 <?php
 session_start();
+header('Content-Type: application/json');
 
-// Database Connection
-$servername = "localhost";
-$username = "root";
-$password = "Ashok@123"; // Change this for production
-$dbname = "portfolio";
+// MongoDB Connection
+require 'vendor/autoload.php'; // Required if using Composer for MongoDB
 
+require 'mongodb_connection.php';
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die(json_encode(["error" => "Database connection failed: " . $conn->connect_error]));
-}
+// Get MongoDB client
+$client = MongoDBManager::getClient();
+$collection = $client->portfolio->details;
 
-// ✅ Check if user is logged in
+// Check if user is logged in
 $user_id = $_SESSION['user_id'] ?? null;
 if (!$user_id) {
     die(json_encode(["error" => "User not logged in"]));
 }
 
-// ✅ Fetch user details
-$sql = "SELECT name, email, mobile, skills, job_roles, github_link, linkedin_link, instagram_link, about, achievements, image_url, education, projects, experience, certifications 
-        FROM details WHERE user_id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$stmt->bind_result($name, $email, $mobile, $skills, $job_roles, $github_link, $linkedin_link, $instagram_link, $about, $achievements, $image_url, $education, $projects, $experience, $certifications_json);
-$stmt->fetch();
-$stmt->close();
+// Fetch user document from MongoDB
+$user = $collection->findOne(["user_id" => $user_id]);
 
-// ✅ Decode JSON fields
-$education = json_decode($education, true) ?: [];
-$projects = json_decode($projects, true) ?: [];
-$experience = json_decode($experience, true) ?: [];
-$certifications = json_decode($certifications_json, true) ?: [];
+if (!$user) {
+    die(json_encode(["error" => "User data not found."]));
+}
 
-// ✅ Format certification file paths
+// Decode JSON fields directly (MongoDB stores as arrays/documents)
+$education = $user['education'] ?? [];
+$projects = $user['projects'] ?? [];
+$experience = $user['experience'] ?? [];
+$certifications = $user['certifications'] ?? [];
+
 $certification_files = [];
 foreach ($certifications as $cert_path) {
     if (file_exists($cert_path)) {
-        $certification_files[] = $cert_path; // Relative path (good for frontend display)
+        $certification_files[] = $cert_path;
     }
 }
 
-// ✅ Extract photo filename only
-$photo_name = $image_url ? basename($image_url) : null;
-
-// ✅ Return JSON response
 echo json_encode([
-    "name" => $name ?? "",
-    "email" => $email ?? "",
-    "mobile" => $mobile ?? "",
-    "skills" => $skills ?? "",
-    "job_roles" => $job_roles ?? "", // Include Job Roles
-    "github_link" => $github_link ?? "",
-    "linkedin_link" => $linkedin_link ?? "",
-    "instagram_link" => $instagram_link ?? "", // Include Instagram Link
-    "about" => $about ?? "",
-    "achievements" => $achievements ?? "",
+    "name" => $user['name'] ?? "",
+    "email" => $user['email'] ?? "",
+    "mobile" => $user['mobile'] ?? "",
+    "skills" => $user['skills'] ?? "",
+    "job_roles" => $user['job_roles'] ?? "",
+    "github_link" => $user['github_link'] ?? "",
+    "linkedin_link" => $user['linkedin_link'] ?? "",
+    "instagram_link" => $user['instagram_link'] ?? "",
+    "about" => $user['about'] ?? "",
+    "achievements" => $user['achievements'] ?? "",
     "education" => $education,
     "projects" => $projects,
     "experience" => $experience,
     "certifications" => $certification_files,
-    // "photo" => $photo_name,
-    "photo_url" => $image_url
+    "photo_url" => $user['image_url'] ?? ""
 ]);
-
-$conn->close();
 ?>
