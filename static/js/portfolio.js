@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(data => {
             if (data.error) {
+                if (data.error === "User not identified") {
+                    window.location.href = 'index.html';
+                    return;
+                }
                 showError(data.error);
                 return;
             }

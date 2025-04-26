@@ -132,14 +132,25 @@ function addExperience(entry = {}, index = document.querySelectorAll('#experienc
 // Fetch and populate data after login
 document.addEventListener("DOMContentLoaded", function () {
     fetch("data_fetch.php")
-        .then(response => response.json())
+        .then(response => {
+            // First check HTTP status
+            if (response.status === 401) { // Unauthorized
+                window.location.href = "index.html";
+                return Promise.reject("Session expired");
+            }
+            if (!response.ok) {
+                return Promise.reject(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            // console.log("data fetched : " + data);
+            console.log("data fetched : " + data);
             if (data.error) {
-                console.log("No logged-in user. Showing empty form.");
-                populateFields("education-container", null, addEducation);
-                populateFields("projects-container", null, addProject);
-                populateFields("experience-container", null, addExperience);
+                if (data.error === "User not logged in") {
+                    window.location.href = "index.html";
+                    return;
+                }
+                throw new Error(data.error);
             } else {
                 // Populate basic fields
                 document.querySelector("[name='name']").value = data.name || "";
