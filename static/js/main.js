@@ -129,6 +129,136 @@ function addExperience(entry = {}, index = document.querySelectorAll('#experienc
     container.appendChild(div);
 }
 
+// Helper function to update datalist options
+function updateDatalistOptions() {
+    const datalist = document.getElementById('skills-datalist');
+    const currentSkills = Array.from(document.querySelectorAll('.skill-name')).map(el => el.textContent.toLowerCase());
+    
+    // Clear existing options
+    datalist.innerHTML = '';
+    
+    // Add only options that aren't already selected
+    const allSkills = [
+        'Python', 'Java', 'C', 'C++', 'PHP', 'JavaScript', 'HTML', 'CSS', 'React', 
+        'Node', 'SQL', 'ML', 'AI', 'DL', 'DSA', 'Web Technologies', 'TypeScript', 
+        'MongoDB', 'Express', 'NextJS', 'Tailwind', 'Bootstrap', 'Git', 'GitHub', 
+        'Firebase', 'Docker', 'Linux', 'Bash', 'Cloud Computing', 'AWS', 'Azure', 
+        'GCP', 'Cyber Security', 'Networking', 'Blockchain', 'DevOps', 'Kubernetes', 
+        'Nginx', 'GraphQL', 'Postman', 'Jira', 'Figma', 'UI/UX'
+    ];
+    
+    allSkills.forEach(skill => {
+        if (!currentSkills.includes(skill.toLowerCase())) {
+            const option = document.createElement('option');
+            option.value = skill;
+            datalist.appendChild(option);
+        }
+    });
+}
+
+// Check if skill already exists
+function skillExists(skillName) {
+    const currentSkills = Array.from(document.querySelectorAll('.skill-name')).map(el => el.textContent.toLowerCase());
+    return currentSkills.includes(skillName.toLowerCase());
+}
+
+// Add dynamic skills fields
+function addSkill() {
+    const skillInput = document.getElementById('skill-name');
+    const skillPercentage = document.getElementById('skill-percentage');
+    const skillsContainer = document.getElementById('skills-container');
+    
+    const skillName = skillInput.value.trim();
+    
+    if (!skillName) {
+        alert('Please enter a skill');
+        return;
+    }
+    
+    if (skillExists(skillName)) {
+        alert('This skill already exists!');
+        return;
+    }
+
+    const skillId = 'skill-' + Date.now();
+    const percentage = skillPercentage.value;
+    
+    const skillDiv = document.createElement('div');
+    skillDiv.className = 'skill-item';
+    skillDiv.innerHTML = `
+        <div class="skill-header">
+            <span class="skill-name">${skillName}</span>
+            <div>
+                <span class="skill-percentage">${percentage}%</span>
+                <span class="remove-skill" onclick="removeSkill(this)">
+                    <i class="fas fa-times"></i>
+                </span>
+            </div>
+        </div>
+        <div class="skill-bar-container">
+            <div class="skill-bar" style="width: ${percentage}%"></div>
+        </div>
+        <input type="hidden" name="skills[${skillId}][name]" value="${skillName}">
+        <input type="hidden" name="skills[${skillId}][percentage]" value="${percentage}">
+    `;
+    
+    skillsContainer.appendChild(skillDiv);
+    skillInput.value = '';
+    
+    // Update datalist options
+    updateDatalistOptions();
+}
+
+function removeSkill(element) {
+    const skillItem = element.closest('.skill-item');
+    skillItem.remove();
+    
+    // Update datalist options when a skill is removed
+    updateDatalistOptions();
+}
+
+// Populate skills from fetched data
+function populateSkillsFromData(data) {
+    const skillsContainer = document.getElementById('skills-container');
+    skillsContainer.innerHTML = '';
+    
+    if (data.skills && typeof data.skills === 'object') {
+        Object.values(data.skills).forEach(skill => {
+            const skillId = 'skill-' + Date.now();
+            const skillDiv = document.createElement('div');
+            skillDiv.className = 'skill-item';
+            skillDiv.innerHTML = `
+                <div class="skill-header">
+                    <span class="skill-name">${skill.name}</span>
+                    <div>
+                        <span class="skill-percentage">${skill.percentage}%</span>
+                        <span class="remove-skill" onclick="removeSkill(this)">
+                            <i class="fas fa-times"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="skill-bar-container">
+                    <div class="skill-bar" style="width: ${skill.percentage}%"></div>
+                </div>
+                <input type="hidden" name="skills[${skillId}][name]" value="${skill.name}">
+                <input type="hidden" name="skills[${skillId}][percentage]" value="${skill.percentage}">
+            `;
+            skillsContainer.appendChild(skillDiv);
+        });
+    }
+    
+    // Update datalist options after populating
+    updateDatalistOptions();
+}
+// Update percentage display
+document.addEventListener('DOMContentLoaded', function () {
+    const percentageInput = document.getElementById('skill-percentage');
+    const percentageDisplay = document.getElementById('skill-percentage-value');
+    
+    percentageInput.addEventListener('input', function() {
+        percentageDisplay.textContent = this.value + '%';
+    });
+});
 // Fetch and populate data after login
 document.addEventListener("DOMContentLoaded", function () {
     fetch("data_fetch.php")
@@ -156,7 +286,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.querySelector("[name='name']").value = data.name || "";
                 document.querySelector("[name='email']").value = data.email || "";
                 document.querySelector("[name='mobile']").value = data.mobile || "";
-                document.querySelector("[name='skills']").value = data.skills || "";
+                populateSkillsFromData(data);
+                updateDatalistOptions();
                 document.querySelector("[name='job_roles']").value = data.job_roles || ""; // Populate Job Roles
                 document.querySelector("[name='github_link']").value = data.github_link || "";
                 document.querySelector("[name='linkedin_link']").value = data.linkedin_link || "";

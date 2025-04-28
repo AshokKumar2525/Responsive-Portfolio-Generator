@@ -413,15 +413,15 @@ function setupCertificateModal() {
         }
     });
 }
-
+// Replace the populateSkills function in portfolio.js with this:
 function populateSkills(data) {
     const container = document.getElementById('skills-list');
     container.innerHTML = '';
 
-    if (data.skills) {
+    if (data.skills && Array.isArray(data.skills)) {
         const skillIcons = {
-            'python': 'filetype-py',
-            'java': 'filetype-java',
+            'python': 'filetype-py', // Will customize this with CSS later
+            'java': 'cup-hot', // Coffee cup for Java
             'c': 'code-slash',
             'c++': 'filetype-cpp',
             'php': 'filetype-php',
@@ -437,32 +437,32 @@ function populateSkills(data) {
             'dsa': 'diagram-3',
             'web technologies': 'globe',
             'typescript': 'filetype-tsx',
-            'mongodb': 'leaf',
+            'mongodb': 'database-fill',
             'express': 'terminal',
             'nextjs': 'layers',
             'tailwind': 'wind',
             'bootstrap': 'bootstrap',
-            'git': 'git-branch',
+            'git': 'git',
             'github': 'github',
             'firebase': 'flame',
             'docker': 'box',
-            'linux': 'linux',
+            'linux': 'ubuntu',
             'bash': 'terminal-square',
             'cloud computing': 'cloud',
-            'aws': 'cloud',
+            'aws': 'cloud-arrow-up',
             'azure': 'cloud-rain',
             'gcp': 'cloud-sun',
             'cyber security': 'shield-check',
             'networking': 'wifi',
-            'blockchain': 'link-2',
-            'devops': 'settings',
+            'blockchain': 'link-45deg',
+            'devops': 'gear-wide-connected',
             'kubernetes': 'boxes',
             'nginx': 'server',
             'graphql': 'graph-up',
             'postman': 'send',
-            'jira': 'clipboard-list',
-            'figma': 'palette',
-            'ui/ux': 'layout-dashboard'
+            'jira': 'kanban',
+            'figma': 'vector-pen',
+            'ui/ux': 'layout-text-window'
         };
 
         const skillColors = {
@@ -512,25 +512,159 @@ function populateSkills(data) {
         };
 
 
-        data.skills.split(',').forEach(skill => {
-            const trimmedSkill = skill.trim().toLowerCase();
-            if (!trimmedSkill) return;
+        data.skills.forEach(skill => {
+            if (!skill.name) return;
 
-            const icon = skillIcons[trimmedSkill] || 'patch-check-fill';
-            const color = skillColors[trimmedSkill] || '#6C757D';
+            const trimmedSkill = skill.name.trim().toLowerCase();
+            const icon = skillIcons[trimmedSkill] || 'patch-check'; // fallback icon
+            const color = skillColors[trimmedSkill] || '#6C757D'; // fallback color
+            const percentage = skill.percentage || 70; // default percentage
 
             const li = document.createElement('li');
             li.className = 'skill-item';
+
             li.innerHTML = `
-              <div class="text-center">
-                  <i class="bi bi-${icon}" style="color: ${color};"></i>
-                  <p class="mt-2">${capitalizeFirstLetter(trimmedSkill)}</p>
-              </div>
-          `;
+                <div class="skill-circle-container">
+                    <div class="skill-circle" 
+                         style="--percentage: ${percentage}; 
+                                --color: ${color};
+                                position: relative;">
+                        <div class="skill-icon-container">
+                            <i class="bi bi-${icon}" 
+                               style="color: ${color};"></i>
+                        </div>
+                        <div class="skill-percentage">${percentage}%</div>
+                    </div>
+                    <p>${capitalizeFirstLetter(trimmedSkill)}</p>
+                </div>
+            `;
             container.appendChild(li);
         });
     }
 }
+
+// Helper function to capitalize first letter
+function capitalizeFirstLetter(string) {
+    return string.toUpperCase();
+}
+
+// function populateSkills(data) {
+//     const container = document.getElementById('skills-list');
+//     container.innerHTML = '';
+
+//     if (data.skills) {
+//         const skillIcons = {
+//             'python': 'filetype-py',
+//             'java': 'filetype-java',
+//             'c': 'code-slash',
+//             'c++': 'filetype-cpp',
+//             'php': 'filetype-php',
+//             'javascript': 'filetype-js',
+//             'html': 'filetype-html',
+//             'css': 'filetype-css',
+//             'react': 'react',
+//             'node': 'node-plus',
+//             'sql': 'database',
+//             'ml': 'robot',
+//             'ai': 'cpu',
+//             'dl': 'motherboard',
+//             'dsa': 'diagram-3',
+//             'web technologies': 'globe',
+//             'typescript': 'filetype-tsx',
+//             'mongodb': 'leaf',
+//             'express': 'terminal',
+//             'nextjs': 'layers',
+//             'tailwind': 'wind',
+//             'bootstrap': 'bootstrap',
+//             'git': 'git-branch',
+//             'github': 'github',
+//             'firebase': 'flame',
+//             'docker': 'box',
+//             'linux': 'linux',
+//             'bash': 'terminal-square',
+//             'cloud computing': 'cloud',
+//             'aws': 'cloud',
+//             'azure': 'cloud-rain',
+//             'gcp': 'cloud-sun',
+//             'cyber security': 'shield-check',
+//             'networking': 'wifi',
+//             'blockchain': 'link-2',
+//             'devops': 'settings',
+//             'kubernetes': 'boxes',
+//             'nginx': 'server',
+//             'graphql': 'graph-up',
+//             'postman': 'send',
+//             'jira': 'clipboard-list',
+//             'figma': 'palette',
+//             'ui/ux': 'layout-dashboard'
+//         };
+
+//         const skillColors = {
+//             'python': '#3776AB',
+//             'java': '#007396',
+//             'c': '#A8B9CC',
+//             'c++': '#00599C',
+//             'php': '#777BB4',
+//             'javascript': '#F7DF1E',
+//             'html': '#E34F26',
+//             'css': '#1572B6',
+//             'react': '#61DAFB',
+//             'node': '#339933',
+//             'sql': '#4479A1',
+//             'ml': '#FF6B6B',
+//             'ai': '#4ECDC4',
+//             'dl': '#8E44AD',
+//             'dsa': '#45B7D1',
+//             'web technologies': '#FFA502',
+//             'typescript': '#3178C6',
+//             'mongodb': '#47A248',
+//             'express': '#303030',
+//             'nextjs': '#000000',
+//             'tailwind': '#38BDF8',
+//             'bootstrap': '#7952B3',
+//             'git': '#F05032',
+//             'github': '#24292E',
+//             'firebase': '#FFCA28',
+//             'docker': '#0db7ed',
+//             'linux': '#FCC624',
+//             'bash': '#4EAA25',
+//             'cloud computing': '#00BFFF',
+//             'aws': '#FF9900',
+//             'azure': '#007FFF',
+//             'gcp': '#4285F4',
+//             'cyber security': '#FF4757',
+//             'networking': '#2ED573',
+//             'blockchain': '#5865F2',
+//             'devops': '#0F9D58',
+//             'kubernetes': '#326CE5',
+//             'nginx': '#009639',
+//             'graphql': '#E10098',
+//             'postman': '#FF6C37',
+//             'jira': '#0052CC',
+//             'figma': '#F24E1E',
+//             'ui/ux': '#A29BFE'
+//         };
+
+
+//         data.skills.split(',').forEach(skill => {
+//             const trimmedSkill = skill.trim().toLowerCase();
+//             if (!trimmedSkill) return;
+
+//             const icon = skillIcons[trimmedSkill] || 'patch-check-fill';
+//             const color = skillColors[trimmedSkill] || '#6C757D';
+
+//             const li = document.createElement('li');
+//             li.className = 'skill-item';
+//             li.innerHTML = `
+//               <div class="text-center">
+//                   <i class="bi bi-${icon}" style="color: ${color};"></i>
+//                   <p class="mt-2">${capitalizeFirstLetter(trimmedSkill)}</p>
+//               </div>
+//           `;
+//             container.appendChild(li);
+//         });
+//     }
+// }
 
 function populateContact(data) {
     if (data.mobile) {
@@ -550,4 +684,106 @@ function populateContact(data) {
     if (data.instagram_link) {
         document.getElementById('instagram').href = data.instagram_link;
     }
+}
+
+
+// Enhanced download functionality
+document.getElementById('download-portfolio').addEventListener('click', async function () {
+    this.innerHTML = '<i class="bi bi-arrow-clockwise animate-spin"></i>';
+
+    try {
+        // 1. Fetch current data from MongoDB
+        const response = await fetch('portfolio.php');
+        const data = await response.json();
+
+        // 2. Create ZIP structure
+        const zip = new JSZip();
+        const static = zip.folder("static");
+        const css = static.folder("css");
+        const js = static.folder("js");
+        const images = static.folder("images");
+
+        // 3. Add HTML with embedded data
+        let htmlContent = `<!DOCTYPE html>
+  <html lang="en">
+  <head>
+      ${document.head.innerHTML.replace('<script defer src="/static/js/portfolio.js"></script>', '')}
+      <style>${await fetchCSS()}</style>
+  </head>
+  <body>
+      ${document.body.innerHTML.replace('<div id="download-portfolio"', '<!-- Download button removed -->')}
+      <script>${await fetchJS()}</script>
+      <script>
+          // Embedded data
+          const portfolioData = ${JSON.stringify(data)};
+          document.addEventListener('DOMContentLoaded', function() {
+              populateBasicInfo(portfolioData);
+              populateAbout(portfolioData);
+              populateEducation(portfolioData);
+              populateProjects(portfolioData);
+              populateSkills(portfolioData);
+              populateCertifications(portfolioData);
+              populateContact(portfolioData);
+              animateJobRoles(portfolioData);
+          });
+      </script>
+  </body>
+  </html>`;
+
+        zip.file("index.html", htmlContent);
+
+        // 4. Add CSS and JS as separate files
+        css.file("portfolio.css", await fetchCSS());
+        js.file("portfolio.js", await fetchJS());
+
+        // 5. Add images (profile and certifications)
+        await addImageToZip(zip, data.photo_url, "static/images/profile.jpg");
+        if (data.certifications) {
+            for (let i = 0; i < data.certifications.length; i++) {
+                await addImageToZip(zip, data.certifications[i], `static/images/certificate_${i}.jpg`);
+            }
+        }
+
+        // 6. Generate and download ZIP
+        const content = await zip.generateAsync({ type: "blob" });
+        downloadBlob(content, "portfolio.zip");
+
+    } catch (error) {
+        console.error("Download failed:", error);
+        alert("Download failed. Please try again.");
+    } finally {
+        this.innerHTML = '<i class="bi bi-download"></i>';
+    }
+});
+
+// Helper functions
+async function fetchCSS() {
+    const link = Array.from(document.styleSheets)
+        .find(sheet => sheet.href && sheet.href.includes('portfolio.css'));
+    return link ? await (await fetch(link.href)).text() : '';
+}
+
+async function fetchJS() {
+    const script = Array.from(document.scripts)
+        .find(script => script.src && script.src.includes('portfolio.js'));
+    return script ? await (await fetch(script.src)).text() : '';
+}
+
+async function addImageToZip(zip, url, filename) {
+    if (!url) return;
+    try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        zip.file(filename, blob);
+    } catch (error) {
+        console.error("Failed to add image:", url, error);
+    }
+}
+
+function downloadBlob(blob, filename) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
 }

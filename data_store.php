@@ -32,6 +32,19 @@ $existing_doc = $collection->findOne(["user_id" => $user_id]);
 $existing_photo = $existing_doc['image_url'] ?? "";
 $existing_certifications = $existing_doc['certifications'] ?? [];
 
+// Process skills with percentages
+$skills = [];
+if (isset($_POST['skills']) && is_array($_POST['skills'])) {
+    foreach ($_POST['skills'] as $skillData) {
+        if (!empty($skillData['name'])) {
+            $skills[] = [
+                'name' => trim($skillData['name']),
+                'percentage' => (int)$skillData['percentage'] // Ensure it's stored as integer
+            ];
+        }
+    }
+}
+
 // Profile Photo Upload
 $imagePath = $existing_photo;
 if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
@@ -81,7 +94,6 @@ if (!empty($_FILES['certifications']['name'][0])) {
 $name = $_POST['name'] ?? "";
 $email = $_POST['email'] ?? "";
 $mobile = $_POST['mobile'] ?? "";
-$skills = $_POST['skills'] ?? "";
 $job_roles = $_POST['job_roles'] ?? "";
 $github_link = $_POST['github_link'] ?? "";
 $linkedin_link = $_POST['linkedin_link'] ?? "";

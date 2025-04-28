@@ -212,14 +212,17 @@
             </div>
         </div>
     </section>
-
-
     <!-- Footer -->
     <footer class="bg-dark text-white py-4">
         <div class="container text-center">
             <p class="mb-0">&copy; <span id="year"></span> All rights reserved.</p>
         </div>
     </footer>
+
+    <!-- Floating Download Button -->
+    <div id="download-portfolio" class="download-btn" title="Download Portfolio as ZIP">
+        <i class="bi bi-download"></i>
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
@@ -237,6 +240,60 @@
         document.getElementById('year').textContent = new Date().getFullYear();
 
     </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        document.getElementById('download-portfolio').addEventListener('click', function () {
+            // Show loading state
+            this.innerHTML = '<i class="bi bi-arrow-clockwise"></i>';
+
+            // Create ZIP file
+            const zip = new JSZip();
+
+            // Add HTML file
+            zip.file("portfolio.html", `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Your existing head content -->
+    ${document.head.innerHTML}
+</head>
+<body>
+    <!-- Your existing body content -->
+    ${document.body.innerHTML.replace('id="download-portfolio"', '').replace(/<script src="https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/jszip\/.*?<\/script>/g, '')}
+</body>
+</html>`);
+
+            // Add CSS file
+            const styles = Array.from(document.styleSheets)
+                .filter(sheet => sheet.href && sheet.href.includes('portfolio.css'))
+                .map(sheet => fetch(sheet.href).then(r => r.text()));
+
+            // Add JS file
+            const scripts = Array.from(document.scripts)
+                .filter(script => script.src && script.src.includes('portfolio.js'))
+                .map(script => fetch(script.src).then(r => r.text()));
+
+            Promise.all([...styles, ...scripts]).then(contents => {
+                if (contents[0]) zip.file("static/css/portfolio.css", contents[0]);
+                if (contents[1]) zip.file("static/js/portfolio.js", contents[1]);
+
+                // Generate ZIP
+                zip.generateAsync({ type: "blob" }).then(function (content) {
+                    // Create download link
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(content);
+                    a.download = "my-portfolio.zip";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+
+                    // Reset button
+                    document.getElementById('download-portfolio').innerHTML = '<i class="bi bi-download"></i>';
+                });
+            });
+        });
+    </script>
+
 </body>
 
 </html>

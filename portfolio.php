@@ -5,6 +5,34 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Add this to your existing portfolio.php (optional for server-side generation)
+if (isset($_GET['download'])) {
+    header('Content-Type: application/zip');
+    header('Content-Disposition: attachment; filename="portfolio.zip"');
+    
+    $files = [
+      'portfolio.html',
+      'static/css/portfolio.css',
+      'static/js/portfolio.js',
+      'portfolio.php'
+    ];
+    
+    $zip = new ZipArchive();
+    $tmp_file = tempnam(sys_get_temp_dir(), '');
+    $zip->open($tmp_file, ZipArchive::CREATE);
+    
+    foreach ($files as $file) {
+      if (file_exists($file)) {
+        $zip->addFile($file);
+      }
+    }
+    
+    $zip->close();
+    readfile($tmp_file);
+    unlink($tmp_file);
+    exit;
+  }
+
 // 2. Add THIS at the top to handle logout requests
 if (isset($_GET['action']) && $_GET['action'] === 'logout') {
     // Nuclear option to destroy session

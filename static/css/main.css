@@ -180,6 +180,78 @@ textarea:valid {
     border-color: #00cc99;
 }
 
+/* Skill bar styles */
+.skill-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 5px;
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+}
+
+.skill-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.skill-name {
+    font-weight: 600;
+    color:gray;
+}
+
+.skill-percentage {
+    font-weight: 600;
+    color: #4e73df;
+}
+
+.skill-bar-container {
+    width: 100%;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.skill-bar {
+    height: 100%;
+    border-radius: 5px;
+    background: linear-gradient(90deg, #4e73df, #224abe);
+    transition: width 0.5s ease;
+    position: relative;
+}
+
+.remove-skill {
+    color: #dc3545;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: all 0.3s ease;
+}
+
+.remove-skill:hover {
+    transform: scale(1.2);
+}
+#skills-container:empty::after {
+    content: "No skills added yet";
+    display: block;
+    color: #ff6a95;
+    font-style: italic;
+    padding: 10px;
+    text-align: center;
+    border: 1px dashed #ff6a95;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+/* Make range input larger */
+.form-range {
+    height: 20px;
+    width: 100%;
+}
+
+.form-range::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+}
+
 /* Enhanced buttons with better ripple effect */
 button {
     background: linear-gradient(135deg, #667eea, #764ba2);

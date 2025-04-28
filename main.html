@@ -18,7 +18,7 @@
             position: relative;
             background: linear-gradient(135deg, #1a1a2e, #16213e);
         }
-        
+
         #bubbles {
             position: fixed;
             top: 0;
@@ -28,7 +28,7 @@
             z-index: -1;
             overflow: hidden;
         }
-        
+
         .bubble {
             position: absolute;
             border-radius: 50%;
@@ -36,19 +36,21 @@
             opacity: 0.7;
             animation: float 15s infinite ease-in-out;
         }
-        
+
         @keyframes float {
             0% {
                 transform: translateY(0) translateX(0) rotate(0deg);
             }
+
             50% {
                 transform: translateY(-100px) translateX(50px) rotate(180deg);
             }
+
             100% {
                 transform: translateY(0) translateX(100px) rotate(360deg);
             }
         }
-        
+
         /* Your form container styling */
         .form-container {
             position: relative;
@@ -64,7 +66,7 @@
         }
     </style>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const bubblesContainer = document.getElementById('bubbles');
             const bubbleCount = 30;
             const colors = [
@@ -77,11 +79,11 @@
                 'rgba(225, 112, 85, 0.7)',      // Coral
                 'rgba(214, 162, 232, 0.7)'      // Lavender
             ];
-            
+
             for (let i = 0; i < bubbleCount; i++) {
                 const bubble = document.createElement('div');
                 bubble.classList.add('bubble');
-                
+
                 // Random properties
                 const size = Math.random() * 100 + 50;
                 const posX = Math.random() * window.innerWidth;
@@ -89,7 +91,7 @@
                 const delay = Math.random() * 10;
                 const duration = 10 + Math.random() * 20;
                 const color = colors[Math.floor(Math.random() * colors.length)];
-                
+
                 bubble.style.width = `${size}px`;
                 bubble.style.height = `${size}px`;
                 bubble.style.left = `${posX}px`;
@@ -97,19 +99,19 @@
                 bubble.style.background = color;
                 bubble.style.animationDelay = `${delay}s`;
                 bubble.style.animationDuration = `${duration}s`;
-                
+
                 // Add subtle shadow
-                bubble.style.boxShadow = `0 0 ${size/2}px ${size/4}px ${color.replace('0.7', '0.3')}`;
-                
+                bubble.style.boxShadow = `0 0 ${size / 2}px ${size / 4}px ${color.replace('0.7', '0.3')}`;
+
                 bubblesContainer.appendChild(bubble);
             }
-            
+
             // Make bubbles responsive
-            window.addEventListener('resize', function() {
+            window.addEventListener('resize', function () {
                 document.querySelectorAll('.bubble').forEach(bubble => {
                     const currentLeft = parseFloat(bubble.style.left);
                     const currentTop = parseFloat(bubble.style.top);
-                    
+
                     bubble.style.left = `${(currentLeft / window.innerWidth) * 100}%`;
                     bubble.style.top = `${(currentTop / window.innerHeight) * 100}%`;
                 });
@@ -156,13 +158,81 @@
                             <label class="form-label"><i class="fas fa-mobile-alt text-success me-2"></i>Mobile</label>
                             <input type="text" class="form-control" name="mobile" required>
                         </div>
+
                         <div class="mb-3">
-                            <label class="form-label"><i class="fas fa-code text-warning me-2"></i>Skills (comma-separated)</label>
-                            <input type="text" class="form-control" name="skills" required>
+                            <label class="form-label"><i class="fas fa-code text-warning me-2"></i>Skills</label>
+                            <div id="skills-container" class="mb-3">
+                                <!-- Existing skills will be populated here -->
+                            </div>
+                            <div class="row g-3 align-items-center">
+                                <div class="col-md-5">
+                                    <input list="skills-datalist" id="skill-name" name="skill_name" class="form-control"
+                                        placeholder="Enter skill">
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="d-flex align-items-center">
+                                        <input type="range" class="form-range flex-grow-1 me-2" id="skill-percentage"
+                                            min="0" max="100" value="70">
+                                        <span class="badge bg-primary" id="skill-percentage-value">70%</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-primary w-100" onclick="addSkill()">
+                                        <i class="fas fa-plus me-1"></i> Add
+                                    </button>
+                                </div>
+                            </div>
+                            <datalist id="skills-datalist">
+                                <option value="Python">
+                                <option value="Java">
+                                <option value="C">
+                                <option value="C++">
+                                <option value="PHP">
+                                <option value="JavaScript">
+                                <option value="HTML">
+                                <option value="CSS">
+                                <option value="React">
+                                <option value="Node">
+                                <option value="SQL">
+                                <option value="ML">
+                                <option value="AI">
+                                <option value="DL">
+                                <option value="DSA">
+                                <option value="Web Technologies">
+                                <option value="TypeScript">
+                                <option value="MongoDB">
+                                <option value="Express">
+                                <option value="NextJS">
+                                <option value="Tailwind">
+                                <option value="Bootstrap">
+                                <option value="Git">
+                                <option value="GitHub">
+                                <option value="Firebase">
+                                <option value="Docker">
+                                <option value="Linux">
+                                <option value="Bash">
+                                <option value="Cloud Computing">
+                                <option value="AWS">
+                                <option value="Azure">
+                                <option value="GCP">
+                                <option value="Cyber Security">
+                                <option value="Networking">
+                                <option value="Blockchain">
+                                <option value="DevOps">
+                                <option value="Kubernetes">
+                                <option value="Nginx">
+                                <option value="GraphQL">
+                                <option value="Postman">
+                                <option value="Jira">
+                                <option value="Figma">
+                                <option value="UI/UX">
+                            </datalist>
+
                         </div>
                         <div class="mb-3">
                             <label class="form-label"><i class="fas fa-briefcase text-info me-2"></i>Job Roles</label>
-                            <input type="text" class="form-control" name="job_roles" placeholder="e.g., Web Developer, Researcher" required>
+                            <input type="text" class="form-control" name="job_roles"
+                                placeholder="e.g., Web Developer, Researcher" required>
                         </div>
 
                         <div class="form-navigation">
@@ -178,15 +248,20 @@
 
                         <div class="mb-3">
                             <label class="form-label"><i class="fab fa-github text-dark me-2"></i>GitHub Link</label>
-                            <input type="url" class="form-control" name="github_link" placeholder="https://www.github.com/yourprofile" required>
+                            <input type="url" class="form-control" name="github_link"
+                                placeholder="https://www.github.com/yourprofile" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label"><i class="fab fa-linkedin text-primary me-2"></i>LinkedIn Link</label>
-                            <input type="url" class="form-control" name="linkedin_link" placeholder="https://www.linkedin.com/yourprofile" required>
+                            <label class="form-label"><i class="fab fa-linkedin text-primary me-2"></i>LinkedIn
+                                Link</label>
+                            <input type="url" class="form-control" name="linkedin_link"
+                                placeholder="https://www.linkedin.com/yourprofile" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label"><i class="fab fa-instagram text-danger me-2"></i>Instagram Link (optional)</label>
-                            <input type="url" class="form-control" name="instagram_link" placeholder="https://www.instagram.com/yourprofile">
+                            <label class="form-label"><i class="fab fa-instagram text-danger me-2"></i>Instagram Link
+                                (optional)</label>
+                            <input type="url" class="form-control" name="instagram_link"
+                                placeholder="https://www.instagram.com/yourprofile">
                         </div>
 
                         <div class="form-navigation">
@@ -208,7 +283,8 @@
                             <textarea class="form-control" name="about" rows="3" required></textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label"><i class="fas fa-trophy text-warning me-2"></i>Achievements (optional)</label>
+                            <label class="form-label"><i class="fas fa-trophy text-warning me-2"></i>Achievements
+                                (optional)</label>
                             <textarea class="form-control" name="achievements" rows="3"></textarea>
                         </div>
 
@@ -226,7 +302,8 @@
                         <h3>Profile Photo</h3>
 
                         <div class="mb-3">
-                            <label class="form-label"><i class="fas fa-camera text-secondary me-2"></i>Profile Photo</label>
+                            <label class="form-label"><i class="fas fa-camera text-secondary me-2"></i>Profile
+                                Photo</label>
                             <div style="display: flex; align-items: center; gap: 15px;">
                                 <input type="file" class="form-control" id="photoInput" name="photo" accept="image/*">
                                 <div style="display: flex; flex-wrap: wrap; gap: 15px;" id="profile-photo-container">
@@ -307,8 +384,10 @@
                         <h3>Certifications</h3>
 
                         <div class="mb-3">
-                            <label class="form-label"><i class="fas fa-certificate text-danger me-2"></i>Certifications</label>
-                            <input type="file" class="form-control" name="certifications[]" id="certificationsInput" accept="image/*" multiple>
+                            <label class="form-label"><i
+                                    class="fas fa-certificate text-danger me-2"></i>Certifications</label>
+                            <input type="file" class="form-control" name="certifications[]" id="certificationsInput"
+                                accept="image/*" multiple>
                             <div style="display: flex; flex-wrap: wrap; gap: 15px;" id="certifications-preview"></div>
                         </div>
 
@@ -323,9 +402,16 @@
         </form>
     </div>
     <script>
+
         function validateCard(currentCardId) {
             const currentCard = document.getElementById(currentCardId);
             const requiredInputs = currentCard.querySelectorAll('input[required], textarea[required], select[required]');
+
+            // Special validation for personal info card (skills)
+            if (currentCardId === 'personalInfoCard' && !hasSkills()) {
+                alert('Please add at least one skill');
+                return false;
+            }
 
             for (const input of requiredInputs) {
                 if (!input.value.trim()) {
@@ -339,6 +425,10 @@
                 }
             }
             return true;
+        }
+        function hasSkills() {
+            const skillsContainer = document.getElementById('skills-container');
+            return skillsContainer.querySelectorAll('.skill-item').length > 0;
         }
         function nextCard(currentCardId, nextCardId) {
             // First validate the current card
@@ -493,8 +583,11 @@
         // Form submission validation
         // Copy
         document.querySelector('form').addEventListener('submit', function (e) {
-            // Validate the last card
-            if (!validateCard('certificationsCard')) {
+            // Validate all required fields and skills
+            if (!validateCard('personalInfoCard') ||
+                !validateCard('linksCard') ||
+                !validateCard('aboutCard') ||
+                !validateCard('certificationsCard')) {
                 e.preventDefault();
                 return false;
             }
@@ -508,6 +601,7 @@
                 alert('Profile photo must be less than 500KB');
                 return false;
             }
+
             // Check certification sizes
             if (certInput.files.length > 0) {
                 for (let i = 0; i < certInput.files.length; i++) {
@@ -520,5 +614,5 @@
             }
 
             return true;
-        });
+        }); 
     </script>

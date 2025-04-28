@@ -29,6 +29,28 @@ if (!$user) {
     die(json_encode(["error" => "User data not found."]));
 }
 
+// Handle skills data (both old and new format)
+$skills = [];
+if (isset($user['skills'])) {
+    if (is_array($user['skills']) || $user['skills'] instanceof MongoDB\Model\BSONArray) {
+        // Already array format
+        $skills = $user['skills'];
+    } elseif (is_string($user['skills'])) {
+        // Legacy format: comma-separated string
+        $skillNames = explode(',', $user['skills']);
+        foreach ($skillNames as $name) {
+            $name = trim($name);
+            if ($name) {
+                $skills[] = [
+                    'name' => $name,
+                    'percentage' => 70 // Default percentage for legacy data
+                ];
+            }
+        }
+    }
+}
+
+
 // Decode JSON fields directly (MongoDB stores as arrays/documents)
 $education = $user['education'] ?? [];
 $projects = $user['projects'] ?? [];
@@ -46,7 +68,7 @@ echo json_encode([
     "name" => $user['name'] ?? "",
     "email" => $user['email'] ?? "",
     "mobile" => $user['mobile'] ?? "",
-    "skills" => $user['skills'] ?? "",
+    "skills" => $skills,
     "job_roles" => $user['job_roles'] ?? "",
     "github_link" => $user['github_link'] ?? "",
     "linkedin_link" => $user['linkedin_link'] ?? "",
