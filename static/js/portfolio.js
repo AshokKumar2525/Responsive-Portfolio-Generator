@@ -569,67 +569,135 @@ function populateContact(data) {
 }
 
 
-// Enhanced download functionality
 document.getElementById('download-portfolio').addEventListener('click', async function () {
     this.innerHTML = '<i class="bi bi-arrow-clockwise animate-spin"></i>';
-
+    
     try {
-        // 1. Fetch current data from MongoDB
+        // 1. Fetch current data
         const response = await fetch('portfolio.php');
         const data = await response.json();
-
+        
         // 2. Create ZIP structure
         const zip = new JSZip();
         const static = zip.folder("static");
         const css = static.folder("css");
         const js = static.folder("js");
         const images = static.folder("images");
-
-        // 3. Add HTML with embedded data
+        
+        // 3. Add HTML with corrected paths
         let htmlContent = `<!DOCTYPE html>
-  <html lang="en">
-  <head>
-      ${document.head.innerHTML.replace('<script defer src="/static/js/portfolio.js"></script>', '')}
-      <style>${await fetchCSS()}</style>
-  </head>
-  <body>
-      ${document.body.innerHTML.replace('<div id="download-portfolio"', '<!-- Download button removed -->')}
-      <script>${await fetchJS()}</script>
-      <script>
-          // Embedded data
-          const portfolioData = ${JSON.stringify(data)};
-          document.addEventListener('DOMContentLoaded', function() {
-              populateBasicInfo(portfolioData);
-              populateAbout(portfolioData);
-              populateEducation(portfolioData);
-              populateProjects(portfolioData);
-              populateSkills(portfolioData);
-              populateCertifications(portfolioData);
-              populateContact(portfolioData);
-              animateJobRoles(portfolioData);
-          });
-      </script>
-  </body>
-  </html>`;
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-store">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${data.name || 'Professional Portfolio'}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="static/css/portfolio.css" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>${await fetchCSS()}</style>
+</head>
+<body>
+    ${document.body.innerHTML
+        .replace('<div id="download-portfolio"', '<!-- Download button removed -->')
+        .replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '')
+    }
+    <script src="static/js/portfolio.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Embedded data
+        const portfolioData = ${JSON.stringify(data)};
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize with embedded data
+            if (typeof populateBasicInfo === 'function') populateBasicInfo(portfolioData);
+            if (typeof populateAbout === 'function') populateAbout(portfolioData);
+            if (typeof populateEducation === 'function') populateEducation(portfolioData);
+            if (typeof populateExperience === 'function') populateExperience(portfolioData);
+            if (typeof populateProjects === 'function') populateProjects(portfolioData);
+            if (typeof populateSkills === 'function') populateSkills(portfolioData);
+            if (typeof populateCertifications === 'function') populateCertifications(portfolioData);
+            if (typeof populateContact === 'function') populateContact(portfolioData);
+            if (typeof populateAchievements === 'function') populateAchievements(portfolioData);
+            if (typeof animateJobRoles === 'function') animateJobRoles(portfolioData);
+            if (typeof setupCertificateModal === 'function') setupCertificateModal();
+            
+            // Initialize AOS animation
+            if (typeof AOS !== 'undefined') {
+                AOS.init({
+                    duration: 800,
+                    easing: 'ease-in-out',
+                    once: true
+                });
+            }
+        });
+    </script>
+</body>
+</html>`;
 
         zip.file("index.html", htmlContent);
-
-        // 4. Add CSS and JS as separate files
+        
+        // 4. Add CSS and JS files
         css.file("portfolio.css", await fetchCSS());
         js.file("portfolio.js", await fetchJS());
-
-        // 5. Add images (profile and certifications)
-        await addImageToZip(zip, data.photo_url, "static/images/profile.jpg");
-        if (data.certifications) {
-            for (let i = 0; i < data.certifications.length; i++) {
-                await addImageToZip(zip, data.certifications[i], `static/images/certificate_${i}.jpg`);
+        
+        // 5. Download and add profile photo
+        if (data.photo_url) {
+            try {
+                const imgResponse = await fetch(data.photo_url);
+                if (imgResponse.ok) {
+                    const imgBlob = await imgResponse.blob();
+                    images.file("profile.jpg", imgBlob);
+                    // Update the HTML to use local path
+                    htmlContent = htmlContent.replace(data.photo_url, 'static/images/profile.jpg');
+                }
+            } catch (error) {
+                console.error("Failed to download profile image:", error);
             }
         }
-
-        // 6. Generate and download ZIP
+        
+        // 6. Download and add certification images
+        if (data.certifications && data.certifications.length > 0) {
+            for (let i = 0; i < data.certifications.length; i++) {
+                const certUrl = data.certifications[i];
+                try {
+                    const certResponse = await fetch(certUrl);
+                    if (certResponse.ok) {
+                        const certBlob = await certResponse.blob();
+                        images.file(`certificate_${i}.jpg`, certBlob);
+                        // Update the HTML to use local paths
+                        htmlContent = htmlContent.replace(
+                            new RegExp(certUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), 
+                            `static/images/certificate_${i}.jpg`
+                        );
+                    }
+                } catch (error) {
+                    console.error("Failed to download certificate image:", certUrl, error);
+                }
+            }
+        }
+        
+        // Update the HTML in the zip with the corrected image paths
+        zip.file("index.html", htmlContent);
+        
+        // 7. Generate and download ZIP
         const content = await zip.generateAsync({ type: "blob" });
-        downloadBlob(content, "portfolio.zip");
-
+        const url = URL.createObjectURL(content);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "portfolio.zip";
+        document.body.appendChild(a);
+        a.click();
+        
+        // Clean up
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
+        
     } catch (error) {
         console.error("Download failed:", error);
         alert("Download failed. Please try again.");
@@ -638,34 +706,34 @@ document.getElementById('download-portfolio').addEventListener('click', async fu
     }
 });
 
-// Helper functions
+// Helper function to fetch JS file content
+async function fetchJS() {
+    // Get the current JS file content
+    const script = Array.from(document.scripts)
+        .find(script => script.src && script.src.includes('portfolio.js'));
+    
+    if (!script) return '';
+    
+    try {
+        const response = await fetch(script.src);
+        let jsContent = await response.text();
+        
+        // Remove the download event listener to prevent recursion
+        jsContent = jsContent.replace(
+            /document\.getElementById\('download-portfolio'\)\.addEventListener\('click'.*?}\);?/gs,
+            '// Download functionality removed for exported portfolio'
+        );
+        
+        return jsContent;
+    } catch (error) {
+        console.error("Failed to fetch JS:", error);
+        return '';
+    }
+}
+
+// Helper function to fetch CSS file content
 async function fetchCSS() {
     const link = Array.from(document.styleSheets)
         .find(sheet => sheet.href && sheet.href.includes('portfolio.css'));
     return link ? await (await fetch(link.href)).text() : '';
-}
-
-async function fetchJS() {
-    const script = Array.from(document.scripts)
-        .find(script => script.src && script.src.includes('portfolio.js'));
-    return script ? await (await fetch(script.src)).text() : '';
-}
-
-async function addImageToZip(zip, url, filename) {
-    if (!url) return;
-    try {
-        const response = await fetch(url);
-        const blob = await response.blob();
-        zip.file(filename, blob);
-    } catch (error) {
-        console.error("Failed to add image:", url, error);
-    }
-}
-
-function downloadBlob(blob, filename) {
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(a.href);
 }
