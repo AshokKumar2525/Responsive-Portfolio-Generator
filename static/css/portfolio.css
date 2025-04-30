@@ -277,6 +277,7 @@ section {
   transform: scale(1.05) translateY(-5px);
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
+
 /* Home Section Social Icons */
 .home-content .social-icons a {
   width: 40px;
@@ -304,11 +305,13 @@ section {
   background: #e1306c !important;
   color: white !important;
 }
+
 .home-social-icons {
   display: flex;
   gap: 1.5rem;
   justify-content: flex-start;
 }
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .home-content .social-icons {
@@ -985,6 +988,61 @@ section {
   border-top: none;
   background-color: transparent !important;
   padding: 0 1.5rem 1.5rem;
+}
+
+/* Mobile Footer Navigation */
+.mobile-footer-nav {
+  display: none;
+  padding: 1rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 1rem;
+}
+
+.mobile-footer-nav h5 {
+  color: white;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+#mobile-footer-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+#mobile-footer-nav li {
+  text-align: center;
+}
+
+.footer-nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.footer-nav-link:hover {
+  color: white;
+  transform: translateX(5px);
+}
+
+.footer-nav-link i {
+  font-size: 1rem;
+}
+
+/* Show only on mobile */
+@media (max-width: 992px) {
+  .mobile-footer-nav {
+    display: block;
+  }
 }
 
 /* Floating Download Button */

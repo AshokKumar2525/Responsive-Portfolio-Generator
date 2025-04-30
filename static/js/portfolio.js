@@ -33,6 +33,8 @@ document.addEventListener('DOMContentLoaded', function () {
             populateAchievements(data);
             animateJobRoles(data);
             setupCertificateModal();
+            setupMobileFooterNav();
+
         })
         .catch(error => {
             showError(error.message);
@@ -54,6 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
     tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
+    window.addEventListener('load', setupMobileFooterNav);
 });
 
 // Handle contact form submission
@@ -77,25 +80,29 @@ document.getElementById('contact_us')?.addEventListener('submit', function (e) {
         alertDiv.remove();
     }, 2000);
 })
-
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     const hamburger = document.querySelector('.hamburger');
-    const navLinks = document.querySelector('.nav'); // Adjust selector to match your nav links container
+    const navLinks = document.querySelector('.nav');
 
-    // Toggle menu
-    hamburger.addEventListener('click', function () {
+    // Keep hamburger toggle functionality
+    hamburger.addEventListener('click', function() {
         this.classList.toggle('active');
         navLinks.classList.toggle('active');
     });
 
-    // Close menu when a link is clicked and scroll to section
-    navLinks.addEventListener('click', function (e) {
-        if (e.target.tagName === 'A') {
-            // Close menu
+    // Update nav link click handler
+    navLinks.addEventListener('click', function(e) {
+        if (e.target.tagName === 'A' && e.target.classList.contains('nav-link')) {
+            // Close hamburger menu
             hamburger.classList.remove('active');
-            this.classList.remove('active');
-
-            // Get target section
+            navLinks.classList.remove('active');
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Scroll to section
             const targetId = e.target.getAttribute('href');
             if (targetId.startsWith('#')) {
                 e.preventDefault();
@@ -106,6 +113,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
+
+    // Keep your existing setupMobileFooterNav call
+    setupMobileFooterNav();
 });
 
 
@@ -432,12 +442,12 @@ function populateSkills(data) {
             'python': 'filetype-py', // Will customize this with CSS later
             'java': 'cup-hot', // Coffee cup for Java
             'c': 'code-slash',
-            'c++': 'filetype-cpp',
+            'c++': 'braces',
             'php': 'filetype-php',
             'javascript': 'filetype-js',
             'html': 'filetype-html',
             'css': 'filetype-css',
-            'react': 'react',
+            'react': 'globe2',
             'node': 'node-plus',
             'sql': 'database',
             'ml': 'robot',
@@ -576,8 +586,35 @@ function populateContact(data) {
         document.getElementById('instagram').href = data.instagram_link;
     }
 }
-
-
+// Add this function to your portfolio.js
+function setupMobileFooterNav() {
+    // Get all nav links from the header
+    const navLinks = document.querySelectorAll('header .nav-link[href^="#"]');
+    const footerNav = document.getElementById('mobile-footer-nav');
+    
+    // Clear existing footer links
+    if (footerNav) footerNav.innerHTML = '';
+    
+    // Clone each nav link to the footer
+    navLinks.forEach(link => {
+        if (link.href.includes('#logout')) return; // Skip logout button
+        
+        const li = document.createElement('li');
+        const a = link.cloneNode(true);
+        
+        // Remove navbar-specific classes and add footer classes
+        a.className = '';
+        a.classList.add('footer-nav-link');
+        
+        li.appendChild(a);
+        if (footerNav) footerNav.appendChild(li);
+    });
+    
+    // Hide footer nav if no links were added
+    if (footerNav && footerNav.children.length === 0) {
+        document.querySelector('.mobile-footer-nav').style.display = 'none';
+    }
+}
 
 document.getElementById('download-portfolio').addEventListener('click', async function () {
     this.innerHTML = '<i class="bi bi-arrow-clockwise animate-spin"></i>';
@@ -661,9 +698,9 @@ document.getElementById('download-portfolio').addEventListener('click', async fu
                     const imgBlob = await imgResponse.blob();
                     images.file("profile.jpg", imgBlob);
                     // Update the HTML to use local path
-                    htmlContent = htmlContent
-                    .replace(new RegExp(data.photo_url, 'g'), 'static/images/profile.jpg')
-                    .replace(/src="[^"]*\/about-pic[^"]*"/g, 'src="static/images/profile.jpg"');                }
+ htmlContent = htmlContent
+                        .replace(new RegExp(data.photo_url, 'g'), 'static/images/profile.jpg')
+                        .replace(/src="[^"]*\/about-pic[^"]*"/g, 'src="static/images/profile.jpg"');                }
             } catch (error) {
                 console.error("Failed to download profile image:", error);
             }
