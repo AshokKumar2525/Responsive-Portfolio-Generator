@@ -127,6 +127,15 @@ function populateBasicInfo(data) {
     const yearSpan = document.getElementById('year');
     if (yearSpan && data.name) {
         yearSpan.parentElement.innerHTML = `&copy; ${new Date().getFullYear()} ${data.name}. All rights reserved.`;
+    }    
+    if (data.linkedin_link) {
+        document.getElementById('home-linkedin').href = data.linkedin_link;
+    }
+    if (data.github_link) {
+        document.getElementById('home-github').href = data.github_link;
+    }
+    if (data.instagram_link) {
+        document.getElementById('home-instagram').href = data.instagram_link;
     }
 }
 
@@ -569,6 +578,7 @@ function populateContact(data) {
 }
 
 
+
 document.getElementById('download-portfolio').addEventListener('click', async function () {
     this.innerHTML = '<i class="bi bi-arrow-clockwise animate-spin"></i>';
     
@@ -651,8 +661,9 @@ document.getElementById('download-portfolio').addEventListener('click', async fu
                     const imgBlob = await imgResponse.blob();
                     images.file("profile.jpg", imgBlob);
                     // Update the HTML to use local path
-                    htmlContent = htmlContent.replace(data.photo_url, 'static/images/profile.jpg');
-                }
+                    htmlContent = htmlContent
+                    .replace(new RegExp(data.photo_url, 'g'), 'static/images/profile.jpg')
+                    .replace(/src="[^"]*\/about-pic[^"]*"/g, 'src="static/images/profile.jpg"');                }
             } catch (error) {
                 console.error("Failed to download profile image:", error);
             }
@@ -721,7 +732,7 @@ async function fetchJS() {
         // Remove the download event listener to prevent recursion
         jsContent = jsContent.replace(
             /document\.getElementById\('download-portfolio'\)\.addEventListener\('click'.*?}\);?/gs,
-            '// Download functionality removed for exported portfolio'
+            ''
         );
         
         return jsContent;
