@@ -32,10 +32,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mail = new PHPMailer(true);
         try {
             $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
+            $mail->Host = 'smtp.gmail.com'; // Use your SMTP server
             $mail->SMTPAuth = true;
-            $mail->Username = 'ashokkumarmalineni25@gmail.com'; // Your Gmail
-            $mail->Password = 'ybpu pirp poso rths'; // App Password
+            $mail->Username = ''; // Your Gmail
+            $mail->Password = ''; // App Password
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port = 465;
 

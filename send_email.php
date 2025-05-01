@@ -34,10 +34,10 @@ $mail = new PHPMailer(true);
 try {
     // SMTP Configuration
     $mail->isSMTP();
-    $mail->Host = getenv('SMTP_HOST') ?: 'smtp.gmail.com'; // Use environment variable for security
+    $mail->Host = getenv('SMTP_HOST') ?: 'yours'; // Use environment variable for security
     $mail->SMTPAuth = true;
-    $mail->Username = getenv('SMTP_USERNAME') ?: 'ashokkumarmalineni25@gmail.com'; // Environment variable for email
-    $mail->Password = getenv('SMTP_PASSWORD') ?: 'ybpu pirp poso rths'; // Environment variable for password
+    $mail->Username = getenv('SMTP_USERNAME') ?: 'yours'; // Environment variable for email
+    $mail->Password = getenv('SMTP_PASSWORD') ?: 'yours'; // Environment variable for password
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
     $mail->Port = 465;
     $mail->SMTPDebug = 0; // Disable SMTP debugging in production
