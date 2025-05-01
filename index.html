@@ -11,6 +11,60 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/static/css/login.css">
+    <!-- Firebase App (compat version) -->
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCdRWtiuA_us7CZGKdaOGou-Vs4EAqsFY4",
+            authDomain: "portfolio-website-genera-1241a.firebaseapp.com",
+            projectId: "portfolio-website-genera-1241a",
+            storageBucket: "portfolio-website-genera-1241a.firebasestorage.app",
+            messagingSenderId: "75462253055",
+            appId: "1:75462253055:web:078146e75150dce58eefca",
+            measurementId: "G-3RJB5XCE3W"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const provider = new firebase.auth.GoogleAuthProvider();
+        const auth = firebase.auth();
+
+        function signInWithGoogle() {
+            auth.signInWithPopup(provider)
+                .then(result => {
+                    const user = result.user;
+
+                    // Send user's email to PHP for session + DB handling
+                    fetch("google_auth.php", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            email: user.email,
+                            name: user.displayName,
+                            uid: user.uid
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.href = "main.html";
+                            } else {
+                                alert("Authentication failed.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error during backend login:", error);
+                        });
+                })
+                .catch(error => {
+                    console.error("Firebase sign-in error:", error);
+                });
+        }
+
+    </script>
+
 </head>
 
 <body>
@@ -45,6 +99,7 @@
             <button type="submit" class="btn btn-primary w-100" id="loginBtn">
                 <span class="btn-text">Login</span>
             </button>
+
             <p class="mt-3">
                 <a class="toggle-link" onclick="toggleForm('forgotPasswordForm')">Forgot Password?</a>
             </p>
@@ -86,6 +141,11 @@
             <p class="mt-3">Already have an account? <a class="toggle-link" onclick="toggleForm('loginForm')">Login</a>
             </p>
         </form>
+        <div class="text-center mt-4">
+            <button type="button" onclick="signInWithGoogle()" class="btn btn-outline-danger w-100">
+                <i class="bi bi-google me-2"></i> Sign in with Google
+            </button>
+        </div>
 
         <form id="forgotPasswordForm" action="send_otp.php" method="POST" style="display: none;">
             <div class="mb-3">
