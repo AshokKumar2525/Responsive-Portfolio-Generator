@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     window.location.href = 'index.html';
                     return;
                 }
-                showError(data.error);
                 return;
             }
             // Populate basic details
@@ -37,19 +36,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         })
         .catch(error => {
-            showError(error.message);
             console.error("Error:", error);
         });
-
-    function showError(message) {
-        errorDisplay.textContent = `Error: ${message}`;
-        errorDisplay.style.display = 'block';
-        errorDisplay.style.color = 'red';
-        errorDisplay.style.padding = '1rem';
-        errorDisplay.style.backgroundColor = '#ffeeee';
-        errorDisplay.style.border = '1px solid red';
-        errorDisplay.style.margin = '1rem';
-    }
 
     // Initialize tooltips
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -158,7 +146,7 @@ function animateJobRoles() {
     const roleElement = document.getElementById('role');
     if (!roleElement) return;
 
-    const roles = roleElement.textContent.split(', ').map(role => role.trim());
+    const roles = roleElement.textContent.split(',').map(role => role.trim());
     if (roles.length <= 1) return;
 
     let currentRoleIndex = 0;
@@ -648,7 +636,7 @@ document.getElementById('download-portfolio').addEventListener('click', async fu
 </head>
 <body>
     ${document.body.innerHTML
-        .replace('<div id="download-portfolio"', '<!-- Download button removed -->')
+        .replace(/<div id="download-portfolio"[^>]*>.*?<\/div>/gs, '')
         .replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '')
     }
     <script src="static/js/portfolio.js"></script>
@@ -688,7 +676,10 @@ document.getElementById('download-portfolio').addEventListener('click', async fu
         
         // 4. Add CSS and JS files
         css.file("portfolio.css", await fetchCSS());
-        js.file("portfolio.js", await fetchJS());
+        
+        // Modified JS file handling to prevent corruption
+        const jsContent = await fetchJS();
+        js.file("portfolio.js", jsContent);
         
         // 5. Download and add profile photo
         if (data.photo_url) {
@@ -698,9 +689,10 @@ document.getElementById('download-portfolio').addEventListener('click', async fu
                     const imgBlob = await imgResponse.blob();
                     images.file("profile.jpg", imgBlob);
                     // Update the HTML to use local path
- htmlContent = htmlContent
+                    htmlContent = htmlContent
                         .replace(new RegExp(data.photo_url, 'g'), 'static/images/profile.jpg')
-                        .replace(/src="[^"]*\/about-pic[^"]*"/g, 'src="static/images/profile.jpg"');                }
+                        .replace(/src="[^"]*\/about-pic[^"]*"/g, 'src="static/images/profile.jpg"');
+                }
             } catch (error) {
                 console.error("Failed to download profile image:", error);
             }
@@ -754,32 +746,48 @@ document.getElementById('download-portfolio').addEventListener('click', async fu
     }
 });
 
-// Helper function to fetch JS file content
+// Improved JS file fetcher
 async function fetchJS() {
-    // Get the current JS file content
-    const script = Array.from(document.scripts)
-        .find(script => script.src && script.src.includes('portfolio.js'));
-    
-    if (!script) return '';
-    
     try {
-        const response = await fetch(script.src);
-        let jsContent = await response.text();
-        
-        // Remove the download event listener to prevent recursion
-        jsContent = jsContent.replace(
-            /document\.getElementById\('download-portfolio'\)\.addEventListener\('click'.*?}\);?/gs,
-            ''
+        // Get all script tags
+        const scripts = Array.from(document.scripts);
+        const portfolioScript = scripts.find(script => 
+            script.src && script.src.includes('portfolio.js')
         );
         
-        return jsContent;
+        if (!portfolioScript) return '';
+        
+        // Fetch original JS content
+        const response = await fetch(portfolioScript.src);
+        let jsContent = await response.text();
+        
+        // Clean up the content more carefully
+        jsContent = jsContent
+            // Remove the download event listener
+            .replace(
+                /\/\/\s*Download\s*button[\s\S]*?document\.getElementById\('download-portfolio'\)[\s\S]*?}\);?/g,
+                ''
+            )
+            // Remove any sourceMappingURL comment
+            .replace(/\/\/#\s*sourceMappingURL=.*$/gm, '')
+            // Ensure proper termination
+            .trim();
+            
+        // Validate the JS content
+        try {
+            new Function(jsContent);
+            return jsContent;
+        } catch (e) {
+            console.error("Invalid JS content after processing:", e);
+            return '';
+        }
     } catch (error) {
         console.error("Failed to fetch JS:", error);
         return '';
     }
 }
 
-// Helper function to fetch CSS file content
+// CSS file fetcher remains the same
 async function fetchCSS() {
     const link = Array.from(document.styleSheets)
         .find(sheet => sheet.href && sheet.href.includes('portfolio.css'));
