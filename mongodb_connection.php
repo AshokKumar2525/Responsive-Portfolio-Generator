@@ -6,7 +6,7 @@ class MongoDBManager {
     private static $uri;
 
     public static function initialize() {
-        self::$uri = "mongodb+srv://ashokkumarmalineni25:Ashok%40123@cluster0.cbkwvdk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+        self::$uri = "your mongodb uri here";
     }
 
     public static function getClient() {
