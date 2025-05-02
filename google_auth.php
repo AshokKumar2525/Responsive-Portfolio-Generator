@@ -21,14 +21,8 @@ if (empty($email)) {
 $user = $users->findOne(['email' => $email]);
 
 if (!$user) {
-    // Create new user with Firebase UID
-    $insertResult = $users->insertOne([
-        'email' => $email,
-        'name' => $name,
-        'firebase_uid' => $uid,
-        'password' => '', // not used
-    ]);
-    $_SESSION['user_id'] = (string)$insertResult->getInsertedId();
+    echo json_encode(["success" => true, "needs_password" => true]);
+    exit();
 } else {
     $_SESSION['user_id'] = (string)$user['_id'];
 }

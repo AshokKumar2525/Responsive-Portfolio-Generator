@@ -17,36 +17,35 @@ $collection = $client->portfolio->users;
 $email = $_SESSION['otp_data']['email'] ?? '';
 if (empty($email)) die("Session error.");
 
+$showForm = true;
+$error = '';
+
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $new_password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
+    $new_password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
 
     // Basic validation
     if (strlen($new_password) < 8) {
-        echo "<div class='alert alert-danger'>Password must be at least 8 characters.</div>";
-        exit();
-    }
-    if ($new_password !== $confirm_password) {
-        echo "<div class='alert alert-danger'>Passwords don't match.</div>";
-        exit();
-    }
-
-    // Hash and update password
-    $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-
-    $updateResult = $collection->updateOne(
-        ['email' => $email],
-        ['$set' => ['password' => $hashed_password]]
-    );
-
-    if ($updateResult->getModifiedCount() > 0) {
-        session_unset();
-        session_destroy();
-        // Show the success message HTML above
-        exit();
+        $error = "Password must be at least 8 characters.";
+    } elseif ($new_password !== $confirm_password) {
+        $error = "Passwords don't match.";
     } else {
-        echo "<div class='alert alert-danger'>Error updating password. Try again.</div>";
+        // Hash and update password
+        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+
+        $updateResult = $collection->updateOne(
+            ['email' => $email],
+            ['$set' => ['password' => $hashed_password]]
+        );
+
+        if ($updateResult->getModifiedCount() > 0) {
+            $showForm = false;
+            session_unset();
+            session_destroy();
+        } else {
+            $error = "Error updating password. Try again.";
+        }
     }
 }
 ?>
@@ -54,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Password Reset Success | Portfolio System</title>
+    <title>Reset Password | Portfolio System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
@@ -77,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #fff;
         }
         
-        .success-card {
+        .card {
             background: rgba(255, 255, 255, 0.98);
             border-radius: 12px;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
@@ -94,16 +93,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             animation: bounce 1s;
         }
         
-        .success-title {
+        .card-title {
             color: var(--secondary-color);
             font-weight: 700;
             margin-bottom: 1rem;
         }
         
-        .success-message {
+        .card-message {
             color: #555;
             margin-bottom: 2rem;
             font-size: 1.1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(26, 188, 156, 0.3);
         }
         
         .btn-success {
@@ -114,18 +128,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: 500;
             border-radius: 6px;
             transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
         }
         
-        .btn-success:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        .password-strength {
+            height: 5px;
+            background: #eee;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            overflow: hidden;
         }
         
-        .btn-success i {
-            margin-right: 8px;
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            background: red;
+            transition: all 0.3s;
         }
         
         @keyframes fadeInUp {
@@ -147,13 +165,95 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
-    <div class="success-card">
-        <i class="bi bi-check-circle-fill success-icon"></i>
-        <h2 class="success-title">Password Updated Successfully!</h2>
-        <p class="success-message">Your password has been changed. You can now login with your new credentials.</p>
-        <a href="index.html" class="btn btn-success">
-            <i class="bi bi-box-arrow-in-right"></i> Continue to Login
-        </a>
-    </div>
+    <?php if (!$showForm): ?>
+        <!-- Success Message -->
+        <div class="card">
+            <i class="bi bi-check-circle-fill success-icon"></i>
+            <h2 class="card-title">Password Updated Successfully!</h2>
+            <p class="card-message">Your password has been changed. You can now login with your new credentials.</p>
+            <a href="index.html" class="btn btn-success">
+                <i class="bi bi-box-arrow-in-right"></i> Continue to Login
+            </a>
+        </div>
+    <?php else: ?>
+        <!-- Password Reset Form -->
+        <div class="card">
+            <i class="bi bi-key-fill success-icon" style="color: var(--primary-color);"></i>
+            <h2 class="card-title">Reset Your Password</h2>
+            <p class="card-message">Please enter a new password for <?= htmlspecialchars($email) ?></p>
+            
+            <?php if ($error): ?>
+                <div class="alert alert-danger"><?= $error ?></div>
+            <?php endif; ?>
+            
+            <form method="POST" id="resetForm">
+                <div class="mb-3 text-start">
+                    <label for="password" class="form-label">New Password</label>
+                    <input type="password" class="form-control" id="password" name="password" 
+                           placeholder="At least 8 characters" required minlength="8">
+                    <div class="password-strength">
+                        <div class="password-strength-bar" id="passwordStrength"></div>
+                    </div>
+                </div>
+                <div class="mb-3 text-start">
+                    <label for="confirm_password" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
+                           placeholder="Re-enter your password" required minlength="8">
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-arrow-repeat"></i> Reset Password
+                </button>
+            </form>
+        </div>
+        
+        <script>
+            // Password strength indicator
+            document.getElementById('password').addEventListener('input', function(e) {
+                const password = e.target.value;
+                const strengthBar = document.getElementById('passwordStrength');
+                let strength = 0;
+                
+                if (password.length >= 8) strength += 1;
+                if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 1;
+                if (password.match(/[0-9]/)) strength += 1;
+                if (password.match(/[^a-zA-Z0-9]/)) strength += 1;
+                
+                // Update strength bar
+                switch(strength) {
+                    case 0:
+                        strengthBar.style.width = '0%';
+                        strengthBar.style.backgroundColor = 'red';
+                        break;
+                    case 1:
+                        strengthBar.style.width = '25%';
+                        strengthBar.style.backgroundColor = 'red';
+                        break;
+                    case 2:
+                        strengthBar.style.width = '50%';
+                        strengthBar.style.backgroundColor = 'orange';
+                        break;
+                    case 3:
+                        strengthBar.style.width = '75%';
+                        strengthBar.style.backgroundColor = 'yellowgreen';
+                        break;
+                    case 4:
+                        strengthBar.style.width = '100%';
+                        strengthBar.style.backgroundColor = 'green';
+                        break;
+                }
+            });
+            
+            // Form validation
+            document.getElementById('resetForm').addEventListener('submit', function(e) {
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirm_password').value;
+                
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    alert('Passwords do not match!');
+                }
+            });
+        </script>
+    <?php endif; ?>
 </body>
 </html>

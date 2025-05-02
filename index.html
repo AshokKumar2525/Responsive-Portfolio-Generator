@@ -17,13 +17,13 @@
 
     <script>
         const firebaseConfig = {
-            apiKey: process.env.FIREBASE_API_KEY,
-            authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-            projectId: process.env.FIREBASE_PROJECT_ID,
-            storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-            messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-            appId: process.env.FIREBASE_APP_ID,
-            measurementId: process.env.FIREBASE_MEASUREMENT_ID
+            apiKey: "",
+            authDomain: "",
+            projectId: "",
+            storageBucket: "",
+            messagingSenderId: "",
+            appId: "",
+            measurementId: ""
         };
         firebase.initializeApp(firebaseConfig);
         const provider = new firebase.auth.GoogleAuthProvider();
@@ -49,7 +49,12 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                window.location.href = "main.html";
+                                if (data.needs_password) {
+                                    toggleForm('signupForm');
+                                    document.querySelector('#signupForm input[name="email"]').value = user.email;
+                                } else {
+                                    window.location.href = "main.html";
+                                }
                             } else {
                                 alert("Authentication failed.");
                             }
@@ -64,7 +69,23 @@
         }
 
     </script>
+    <style>
+        .password-strength {
+            height: 5px;
+            background: #eee;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
 
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            background: red;
+            transition: all 0.3s;
+        }
+    </style>
 </head>
 
 <body>
@@ -99,10 +120,16 @@
             <button type="submit" class="btn btn-primary w-100" id="loginBtn">
                 <span class="btn-text">Login</span>
             </button>
-
+            
             <p class="mt-3">
                 <a class="toggle-link" onclick="toggleForm('forgotPasswordForm')">Forgot Password?</a>
             </p>
+
+            <div class="text-center mt-4">
+                <button type="button" onclick="signInWithGoogle()" class="btn btn-outline-danger w-100">
+                    <i class="bi bi-google me-2"></i> Sign In with Google
+                </button>
+            </div>
             <p class="mt-3">
                 Don't have an account? <a class="toggle-link" onclick="toggleForm('signupForm')">Sign up</a>
             </p>
@@ -123,6 +150,9 @@
                         <i class="bi bi-eye"></i>
                     </button>
                 </div>
+                <div class="password-strength">
+                    <div class="password-strength-bar" id="signupStrengthBar"></div>
+                </div>
                 <small class="text-muted">Minimum 8 characters</small>
             </div>
             <div class="mb-3">
@@ -138,25 +168,22 @@
             <button type="submit" class="btn btn-primary w-100" id="signupBtn">
                 <span class="btn-text">Sign Up</span>
             </button>
+
             <p class="mt-3">Already have an account? <a class="toggle-link" onclick="toggleForm('loginForm')">Login</a>
             </p>
         </form>
-        <div class="text-center mt-4">
-            <button type="button" onclick="signInWithGoogle()" class="btn btn-outline-danger w-100">
-                <i class="bi bi-google me-2"></i> Sign in with Google
-            </button>
-        </div>
 
-        <form id="forgotPasswordForm" action="send_otp.php" method="POST" style="display: none;">
-            <div class="mb-3">
-                <label class="form-label">Enter your email</label>
-                <input type="email" class="form-control" name="email" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100" id="forgotBtn">
-                <span class="btn-text">Send OTP</span>
-            </button>
-            <p class="mt-3"><a class="toggle-link" onclick="toggleForm('loginForm')">Back to Login</a></p>
-        </form>
+
+    <form id="forgotPasswordForm" action="send_otp.php" method="POST" style="display: none;">
+        <div class="mb-3">
+            <label class="form-label">Enter your email</label>
+            <input type="email" class="form-control" name="email" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100" id="forgotBtn">
+            <span class="btn-text">Send OTP</span>
+        </button>
+        <p class="mt-3"><a class="toggle-link" onclick="toggleForm('loginForm')">Back to Login</a></p>
+    </form>
     </div>
 
     <script>
@@ -207,6 +234,40 @@
 
             return true;
         }
+        document.getElementById('password').addEventListener('input', function (e) {
+            const password = e.target.value;
+            const strengthBar = document.getElementById('signupStrengthBar');
+            let strength = 0;
+
+            if (password.length >= 8) strength += 1;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 1;
+            if (password.match(/[0-9]/)) strength += 1;
+            if (password.match(/[^a-zA-Z0-9]/)) strength += 1;
+
+            // Update strength bar
+            switch (strength) {
+                case 0:
+                    strengthBar.style.width = '0%';
+                    strengthBar.style.backgroundColor = 'red';
+                    break;
+                case 1:
+                    strengthBar.style.width = '25%';
+                    strengthBar.style.backgroundColor = 'red';
+                    break;
+                case 2:
+                    strengthBar.style.width = '50%';
+                    strengthBar.style.backgroundColor = 'orange';
+                    break;
+                case 3:
+                    strengthBar.style.width = '75%';
+                    strengthBar.style.backgroundColor = 'yellowgreen';
+                    break;
+                case 4:
+                    strengthBar.style.width = '100%';
+                    strengthBar.style.backgroundColor = 'green';
+                    break;
+            }
+        });
 
     </script>
 </body>
