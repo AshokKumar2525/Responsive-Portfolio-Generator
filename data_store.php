@@ -36,14 +36,27 @@ $existing_certifications = $existing_doc['certifications'] ?? [];
 $skills = [];
 if (isset($_POST['skills']) && is_array($_POST['skills'])) {
     foreach ($_POST['skills'] as $skillData) {
-        if (!empty($skillData['name'])) {
+        // Handle both formats - with dynamic keys and direct array
+        if (isset($skillData['name']) && !empty($skillData['name'])) {
+            // Normal format
             $skills[] = [
                 'name' => trim($skillData['name']),
-                'percentage' => (int)$skillData['percentage'] // Ensure it's stored as integer
+                'percentage' => (int)($skillData['percentage'] ?? 70)
             ];
+        } elseif (is_array($skillData)) {
+            // Dynamic key format (from frontend)
+            foreach ($skillData as $skillItem) {
+                if (!empty($skillItem['name'])) {
+                    $skills[] = [
+                        'name' => trim($skillItem['name']),
+                        'percentage' => (int)($skillItem['percentage'] ?? 70)
+                    ];
+                }
+            }
         }
     }
 }
+
 
 // Profile Photo Upload
 $imagePath = $existing_photo;

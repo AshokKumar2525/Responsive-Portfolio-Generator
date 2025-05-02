@@ -163,12 +163,9 @@ function skillExists(skillName) {
 }
 
 // Add dynamic skills fields
-function addSkill() {
-    const skillInput = document.getElementById('skill-name');
-    const skillPercentage = document.getElementById('skill-percentage');
-    const skillsContainer = document.getElementById('skills-container');
-    
-    const skillName = skillInput.value.trim();
+function addSkill(skill = {}) {
+    const skillName = skill.name || document.getElementById('skill-name').value.trim();
+    const percentage = skill.percentage || document.getElementById('skill-percentage').value;
     
     if (!skillName) {
         alert('Please enter a skill');
@@ -180,8 +177,8 @@ function addSkill() {
         return;
     }
 
-    const skillId = 'skill-' + Date.now();
-    const percentage = skillPercentage.value;
+    const skillsContainer = document.getElementById('skills-container');
+    const index = document.querySelectorAll('.skill-item').length;
     
     const skillDiv = document.createElement('div');
     skillDiv.className = 'skill-item';
@@ -198,14 +195,16 @@ function addSkill() {
         <div class="skill-bar-container">
             <div class="skill-bar" style="width: ${percentage}%"></div>
         </div>
-        <input type="hidden" name="skills[${skillId}][name]" value="${skillName}">
-        <input type="hidden" name="skills[${skillId}][percentage]" value="${percentage}">
+        <input type="hidden" name="skills[${index}][name]" value="${skillName}">
+        <input type="hidden" name="skills[${index}][percentage]" value="${percentage}">
     `;
     
     skillsContainer.appendChild(skillDiv);
-    skillInput.value = '';
     
-    // Update datalist options
+    if (!skill.name) {
+        document.getElementById('skill-name').value = '';
+    }
+    
     updateDatalistOptions();
 }
 
@@ -222,9 +221,8 @@ function populateSkillsFromData(data) {
     const skillsContainer = document.getElementById('skills-container');
     skillsContainer.innerHTML = '';
     
-    if (data.skills && typeof data.skills === 'object') {
-        Object.values(data.skills).forEach(skill => {
-            const skillId = 'skill-' + Date.now();
+    if (data.skills && Array.isArray(data.skills)) {
+        data.skills.forEach((skill, index) => {
             const skillDiv = document.createElement('div');
             skillDiv.className = 'skill-item';
             skillDiv.innerHTML = `
@@ -240,16 +238,16 @@ function populateSkillsFromData(data) {
                 <div class="skill-bar-container">
                     <div class="skill-bar" style="width: ${skill.percentage}%"></div>
                 </div>
-                <input type="hidden" name="skills[${skillId}][name]" value="${skill.name}">
-                <input type="hidden" name="skills[${skillId}][percentage]" value="${skill.percentage}">
+                <input type="hidden" name="skills[${index}][name]" value="${skill.name}">
+                <input type="hidden" name="skills[${index}][percentage]" value="${skill.percentage}">
             `;
             skillsContainer.appendChild(skillDiv);
         });
     }
     
-    // Update datalist options after populating
     updateDatalistOptions();
 }
+
 // Update percentage display
 document.addEventListener('DOMContentLoaded', function () {
     const percentageInput = document.getElementById('skill-percentage');
