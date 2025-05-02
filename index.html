@@ -85,6 +85,26 @@
             background: red;
             transition: all 0.3s;
         }
+
+        /* Change cursor to pointer over buttons and links */
+        button,
+        .toggle-link {
+            cursor: pointer;
+        }
+
+        /* Change cursor to text for email and password fields */
+        input[type="email"],
+        input[type="password"] {
+            cursor: text;
+        }
+
+        
+
+        /* Wait cursor on Google sign-in */
+        button[onclick="signInWithGoogle()"] {
+            cursor: progress;
+        }
+        
     </style>
 </head>
 
@@ -120,7 +140,7 @@
             <button type="submit" class="btn btn-primary w-100" id="loginBtn">
                 <span class="btn-text">Login</span>
             </button>
-            
+
             <p class="mt-3">
                 <a class="toggle-link" onclick="toggleForm('forgotPasswordForm')">Forgot Password?</a>
             </p>
@@ -174,16 +194,16 @@
         </form>
 
 
-    <form id="forgotPasswordForm" action="send_otp.php" method="POST" style="display: none;">
-        <div class="mb-3">
-            <label class="form-label">Enter your email</label>
-            <input type="email" class="form-control" name="email" required>
-        </div>
-        <button type="submit" class="btn btn-primary w-100" id="forgotBtn">
-            <span class="btn-text">Send OTP</span>
-        </button>
-        <p class="mt-3"><a class="toggle-link" onclick="toggleForm('loginForm')">Back to Login</a></p>
-    </form>
+        <form id="forgotPasswordForm" action="send_otp.php" method="POST" style="display: none;">
+            <div class="mb-3">
+                <label class="form-label">Enter your email</label>
+                <input type="email" class="form-control" name="email" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100" id="forgotBtn">
+                <span class="btn-text">Send OTP</span>
+            </button>
+            <p class="mt-3"><a class="toggle-link" onclick="toggleForm('loginForm')">Back to Login</a></p>
+        </form>
     </div>
 
     <script>
