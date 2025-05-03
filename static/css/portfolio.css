@@ -236,7 +236,13 @@ section {
   gap: 1.5rem;
   justify-content: flex-start;
 }
-
+/* Mobile/Pixel 7 - Centered */
+@media (max-width: 768px) {
+  .home-content .social-icons {
+    justify-content: center; /* Center only on mobile */
+    width: 100%; /* Take full width */
+  }
+}
 .home-content .social-icons a {
   width: 40px;
   height: 40px;
