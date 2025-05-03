@@ -49,14 +49,10 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                if (data.needs_password) {
-                                    toggleForm('signupForm');
-                                    document.querySelector('#signupForm input[name="email"]').value = user.email;
-                                } else {
-                                    window.location.href = "main.html";
-                                }
+                                // Redirect to main.html regardless of whether user was new or existing
+                                window.location.href = "main.html";
                             } else {
-                                alert("Authentication failed.");
+                                alert("Authentication failed: " + (data.message || "Unknown error"));
                             }
                         })
                         .catch(error => {
@@ -98,13 +94,10 @@
             cursor: text;
         }
 
-        
-
         /* Wait cursor on Google sign-in */
         button[onclick="signInWithGoogle()"] {
             cursor: progress;
         }
-        
     </style>
 </head>
 
@@ -131,8 +124,7 @@
             </div>
             <div class="mb-3 input-group">
                 <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                <input type="password" class="form-control" name="password" id="loginPassword" placeholder="Password"
-                    required>
+                <input type="password" class="form-control" name="password" id="loginPassword" placeholder="Password" required>
                 <button class="btn btn-outline-secondary toggle-password" type="button">
                     <i class="bi bi-eye"></i>
                 </button>
@@ -140,12 +132,19 @@
             <button type="submit" class="btn btn-primary w-100" id="loginBtn">
                 <span class="btn-text">Login</span>
             </button>
-
+        
             <p class="mt-3">
                 <a class="toggle-link" onclick="toggleForm('forgotPasswordForm')">Forgot Password?</a>
             </p>
-
-            <div class="text-center mt-4">
+        
+            <!-- OR separator -->
+            <div class="d-flex align-items-center my-3">
+                <hr class="flex-grow-1">
+                <span class="mx-2 text-muted">OR</span>
+                <hr class="flex-grow-1">
+            </div>
+        
+            <div class="text-center">
                 <button type="button" onclick="signInWithGoogle()" class="btn btn-outline-danger w-100">
                     <i class="bi bi-google me-2"></i> Sign In with Google
                 </button>
@@ -154,9 +153,8 @@
                 Don't have an account? <a class="toggle-link" onclick="toggleForm('signupForm')">Sign up</a>
             </p>
         </form>
-
-        <form id="signupForm" action="signup.php" method="POST" style="display: none;"
-            onsubmit="return validateSignup()">
+        
+        <form id="signupForm" action="signup.php" method="POST" style="display: none;" onsubmit="return validateSignup()">
             <div class="mb-3 input-group">
                 <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                 <input type="email" class="form-control" name="email" placeholder="Email" required>
@@ -188,9 +186,20 @@
             <button type="submit" class="btn btn-primary w-100" id="signupBtn">
                 <span class="btn-text">Sign Up</span>
             </button>
-
-            <p class="mt-3">Already have an account? <a class="toggle-link" onclick="toggleForm('loginForm')">Login</a>
-            </p>
+        
+            <!-- OR separator -->
+            <div class="d-flex align-items-center my-3">
+                <hr class="flex-grow-1">
+                <span class="mx-2 text-muted">OR</span>
+                <hr class="flex-grow-1">
+            </div>
+        
+            <div class="text-center">
+                <button type="button" onclick="signInWithGoogle()" class="btn btn-outline-danger w-100">
+                    <i class="bi bi-google me-2"></i> Sign Up with Google
+                </button>
+            </div>
+            <p class="mt-3">Already have an account? <a class="toggle-link" onclick="toggleForm('loginForm')">Login</a></p>
         </form>
 
 

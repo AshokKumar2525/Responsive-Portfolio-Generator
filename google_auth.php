@@ -21,8 +21,14 @@ if (empty($email)) {
 $user = $users->findOne(['email' => $email]);
 
 if (!$user) {
-    echo json_encode(["success" => true, "needs_password" => true]);
-    exit();
+    // Create new user account with Google info
+    $insertResult = $users->insertOne([
+        'email' => $email,
+        'name' => $name,
+        'google_uid' => $uid,
+    ]);
+    
+    $_SESSION['user_id'] = (string)$insertResult->getInsertedId();
 } else {
     $_SESSION['user_id'] = (string)$user['_id'];
 }
