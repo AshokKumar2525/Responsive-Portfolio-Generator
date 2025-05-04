@@ -332,7 +332,7 @@ section {
 
 .education-item h3 {
   font-size: 1.3rem;
-  color: var(--secondary-color);
+  color: var(--primary-color);
   margin-bottom: 0.5rem;
 }
 
@@ -493,6 +493,7 @@ section {
   padding: 15px 20px;
   margin-bottom: 10px;
   border-radius: 8px;
+  border-left: 4px solid var(--primary-color);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
   transition: transform 0.2s ease;
 }

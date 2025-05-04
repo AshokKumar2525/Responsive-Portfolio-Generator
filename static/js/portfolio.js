@@ -669,6 +669,7 @@ document.getElementById('download-portfolio').addEventListener('click', async fu
     ${document.body.innerHTML
         .replace(/<div id="download-portfolio"[^>]*>.*?<\/div>/gs, '')
         .replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '')
+        .replace(/<li class="nav-item">\s*<a href="portfolio\.php\?action=logout" class="btn btn-outline-danger btn-sm logout-btn">\s*<i class="bi bi-box-arrow-right me-1"><\/i> Logout\s*<\/a>\s*<\/li>/g, '')
     }
     <script src="static/js/portfolio.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
